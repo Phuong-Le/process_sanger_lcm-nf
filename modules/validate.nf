@@ -1,4 +1,6 @@
-// courtesy of Harry Hung
+// adapted from script by Harry Hung
+// checking input parameters
+
 
 validParams = [
     sample_paths: 'path',
@@ -78,4 +80,10 @@ void validate(Map params) {
 
         System.exit(1)
     }
+}
+
+// mut_type can only be "snp" or "indel"
+if ( ! ["snp", "indel"].contains(params.mut_type) ) {
+    log.error("mut_type can only be either snp or indel")
+    System.exit(2)
 }

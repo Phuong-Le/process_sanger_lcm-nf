@@ -3,10 +3,10 @@
 // Enable DSL 2
 nextflow.enable.dsl=2
 
-
 // import processes for main workflow
 include { validate } from "$projectDir/modules/validate.nf"
 include { hairpinFilter } from "$projectDir/modules/hairpin.nf"
+include { pindelFilter } from "$projectDir/modules/pindelFilter.nf"
 include { cgpVaf } from "$projectDir/modules/cgpVaf.nf"
 include { betaBinomFilterIndex } from "$projectDir/modules/betaBinomFilterIndex.nf"
 include { betaBinomFilter } from "$projectDir/modules/betaBinomFilter.nf"
@@ -19,31 +19,35 @@ workflow {
 
     // Hairpin filtering for SNPs 
     if (params.mut_type=='snp') {
+        vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/snp_default.filter" : params.vcfilter_config
         hairpin_input_ch = Channel.of(sample_paths)
             .splitCsv( header: true, sep : '\t' )
             .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf, row.vcf_tbi, row.bam, row.bai, row.bas, row.met, row.bam_match, row.bai_match ) }
-        hairpin_filtered_ch = hairpinFilter(hairpin_input_ch, params.vcfilter_config)
-
-        // group by PDID for cgpVaf
-        cgpvaf_input_ch = hairpin_filtered_ch.groupTuple( by: 0 )
+        vcfiltered_ch = hairpinFilter(hairpin_input_ch, vcfilter_config)
+    }
+    
+    // Quality filtering based on Pindel for Indels 
+    if (params.mut_type=='indel') {
+        vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/indel_default.filter" : params.vcfilter_config
+        indel_input_ch = Channel.of(sample_paths)
+            .splitCsv( header: true, sep : '\t' )
+            .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf, row.bam, row.bai, row.bam_match, row.bai_match ) }
+        vcfiltered_ch = pindelFilter(indel_input_ch, vcfilter_config)
     }
 
-    // Quality filtering based on Pindel for Indels 
-    
     // cgpVaf 
+    cgpvaf_input_ch = vcfiltered_ch.groupTuple( by: 0 ) // group by PDID for cgpVaf
     cgpVaf_out_ch = cgpVaf(cgpvaf_input_ch, params.mut_type)
     // cgpVaf_out_ch = cgpVaf(cgpvaf_input_ch, params.mut_type, params.reference_genome, params.high_depth_region) // keeping this in case cgpVaf module changes such that absolute path is no longer required
 
-    (beta_binom_index_ch, germline, somatic, rho) = betaBinomFilterIndex(cgpVaf_out_ch)
-
-    // filtering from the hairpin filtered file 
-    hairpin_filtered_relevant_ch = hairpin_filtered_ch
+    // BetaBinomial filtering for germline and LCM artefacts based on cgpVaf (methods by Tim Coorens)
+    (beta_binom_index_ch, germline, somatic, rho) = betaBinomFilterIndex(cgpVaf_out_ch) // get the indices for the filtering 
+    // use hairpin or pindel vcfiltered output to recover the donor-based channels from cgpVaf
+    vcfiltered_relevant_ch = vcfiltered_ch
         .map( sample -> tuple(sample[0], sample[1], sample[2], sample[3], sample[4]) )
-
-    beta_binom_filter_input_ch = beta_binom_index_ch.cross(hairpin_filtered_relevant_ch)
+    beta_binom_filter_input_ch = beta_binom_index_ch.cross(vcfiltered_relevant_ch)
         .map( sample -> tuple(sample[0][0], sample[1][1], sample[1][2], sample[1][3], sample[1][4], sample[0][1]) )
-        
     out = betaBinomFilter(beta_binom_filter_input_ch)
-    out.view()
+    out.subscribe onNext: { println "Finished ${it[0]}" }, onComplete: { println "Done" }
 
 }

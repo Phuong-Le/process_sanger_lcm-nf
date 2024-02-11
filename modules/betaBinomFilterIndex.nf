@@ -8,9 +8,9 @@ process betaBinomFilterIndex {
 
     output:
     tuple val(pdid), path("*.bed")
-    path("germline_ids.txt") 
-    path("somatic_ids.txt")
-    path("somatic_ids_rho.txt")
+    path "germline_ids.txt", optional: true 
+    path "somatic_ids.txt", optional: true 
+    path "somatic_ids_rho.txt", optional: true 
 
 
     script:
