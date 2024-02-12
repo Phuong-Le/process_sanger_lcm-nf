@@ -1,5 +1,5 @@
 process hairpinFilter {
-    publishDir "${params.outdir}/${params.mut_type}/${pdid}", overwrite: false
+    publishDir "${params.outdir}/${pdid}", overwrite: false
 
     // hairpin filter the mutation file 
     input:

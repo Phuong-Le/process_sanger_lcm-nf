@@ -1,5 +1,5 @@
 process betaBinomFilter {
-    publishDir "${params.outdir}/${params.mut_type}/${pdid}", overwrite: false
+    publishDir "${params.outdir}/${pdid}", overwrite: false
     
     // filtering according to the indices obtained from betaBinomFilterIndex
     input:

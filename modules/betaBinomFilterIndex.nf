@@ -1,5 +1,5 @@
 process betaBinomFilterIndex {
-    publishDir "${params.outdir}/${params.mut_type}/${pdid}", overwrite: false
+    publishDir "${params.outdir}/${pdid}", overwrite: false
 
     // Beta Binomial filtering of germline mutations and artefacts, based on Tim Coorens' R script
     // The outcome is a bed file for the indices of the PASSED mutations

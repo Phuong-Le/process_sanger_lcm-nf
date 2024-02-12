@@ -17,9 +17,9 @@ validate(params)
 workflow {
     String sample_paths = new File(params.sample_paths).getText('UTF-8')
 
-    // Hairpin filtering for SNPs 
-    if (params.mut_type=='snp') {
-        vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/snp_default.filter" : params.vcfilter_config
+    // Hairpin filtering for SNVs 
+    if (params.mut_type=='snv') {
+        vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/snv_default.filter" : params.vcfilter_config
         hairpin_input_ch = Channel.of(sample_paths)
             .splitCsv( header: true, sep : '\t' )
             .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf, row.vcf_tbi, row.bam, row.bai, row.bas, row.met, row.bam_match, row.bai_match ) }
