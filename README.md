@@ -24,14 +24,14 @@ git clone git@github.com:Phuong-Le/process_sanger_lcm-nf.git
 ### Arguments
 
 """
-sample_paths:       a file that contains paths to relevant files for the processes in the pipeline, //
-    with headers similar to [demo_files/lcm_processing_input_indel.tsv](https://github.com/Phuong-Le/process_sanger_lcm-nf/blob/main/demo_files/lcm_processing_input_indel.tsv) for Indels //
-    or [demo_files/lcm_processing_input_snv.tsv](https://github.com/Phuong-Le/process_sanger_lcm-nf/blob/main/demo_files/lcm_processing_input_snv.tsv) for SNVs. //
-    NOTE that the `data_dir` column is not neccessary. //
-        the [Simple Name](https://www.geeksforgeeks.org/class-getsimplename-method-in-java-with-examples/) of the files should be the same as the sample ID //
-        `vcf` filenames need to end with "vcf.gz" //
-        Due to cgpVaf requirements, the bam files should be named "${sample_id}.bam" //
-        the bai files should be named "${sample_id}.bam.bai" //
+sample_paths:       a file that contains paths to relevant files for the processes in the pipeline, \
+    with headers similar to [demo_files/lcm_processing_input_indel.tsv](https://github.com/Phuong-Le/process_sanger_lcm-nf/blob/main/demo_files/lcm_processing_input_indel.tsv) for Indels \
+    or [demo_files/lcm_processing_input_snv.tsv](https://github.com/Phuong-Le/process_sanger_lcm-nf/blob/main/demo_files/lcm_processing_input_snv.tsv) for SNVs. \
+    NOTE that the `data_dir` column is not neccessary. \
+        the [Simple Name](https://www.geeksforgeeks.org/class-getsimplename-method-in-java-with-examples/) of the files should be the same as the sample ID \
+        `vcf` filenames need to end with "vcf.gz" \
+        Due to cgpVaf requirements, the bam files should be named "${sample_id}.bam" \
+        the bai files should be named "${sample_id}.bam.bai" \
         - similarly for the matching normal sample "${match_normal_id}.bam" and "${match_normal_id}.bam.bai"
 
 vcfilter_config:    pre-cgpVaf filtering, default to [data/indel_default.filter](https://github.com/Phuong-Le/process_sanger_lcm-nf/blob/main/data/indel_default.filter) for Indels and [data/snv_default.filter](https://github.com/Phuong-Le/process_sanger_lcm-nf/blob/main/data/snv_default.filter) for SNVs
