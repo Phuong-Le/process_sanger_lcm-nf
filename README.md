@@ -23,7 +23,8 @@ git clone git@github.com:Phuong-Le/process_sanger_lcm-nf.git
 
 ### Arguments
 
-"""
+""" 
+
 sample_paths:       a file that contains paths to relevant files for the processes in the pipeline, \
     with headers similar to [demo_files/lcm_processing_input_indel.tsv](https://github.com/Phuong-Le/process_sanger_lcm-nf/blob/main/demo_files/lcm_processing_input_indel.tsv) for Indels \
     or [demo_files/lcm_processing_input_snv.tsv](https://github.com/Phuong-Le/process_sanger_lcm-nf/blob/main/demo_files/lcm_processing_input_snv.tsv) for SNVs. \
@@ -43,6 +44,7 @@ reference_genome:   absolute path to reference genome fasta file
 high_depth_region:  absolute path to high depth region bed file
 
 outdir:             path to out directory
+
 """
 
 ### Examples

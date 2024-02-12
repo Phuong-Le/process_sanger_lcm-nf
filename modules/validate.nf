@@ -82,8 +82,8 @@ void validate(Map params) {
     }
 }
 
-// mut_type can only be "snv" or "indel"
-if ( ! ["snv", "indel"].contains(params.mut_type) ) {
-    log.error("mut_type can only be either snv or indel")
+// mut_type can only be "snp" or "indel"
+if ( ! ["snp", "indel"].contains(params.mut_type) ) {
+    log.error("mut_type can only be either snp or indel")
     System.exit(2)
 }
