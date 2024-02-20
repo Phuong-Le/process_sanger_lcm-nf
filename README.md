@@ -6,10 +6,11 @@ A Nextflow pipeline to process LCM data post-CaVEMan or Pindel variant calling
 
 - [Nextflow](https://www.nextflow.io/)
 - [hairpin](https://github.com/cancerit/hairpin-wrapper) wrapper by CASM IT at the Sanger institute
-- [vcfilter]() - a wrapper by CASM IT (no public repo at the moment but I might switch to bcftools)
+- [vcfilter]() - a wrapper by CASM IT (public repo coming soon)
 - [tabix](https://www.htslib.org/doc/tabix.html)
 - [cgpVAFcommand](https://github.com/cancerit/vafCorrect/tree/dev)
 - [R](https://www.r-project.org/)
+- [MutationsPy](https://github.com/Phuong-Le/MutationsPy)
 
 ## Installation
 
