@@ -103,7 +103,7 @@ reference_genome_cachedir=path/to/genome/cachedir
 mutmat_kmer=3
 outdir=${working_dir}
 
-bsub -cwd ${working_dir} -o %J.${mut_type}.out -e %J.${mut_type}.err -R "select[mem>1000] rusage[mem=1000]" -M1000 \
+bsub -cwd ${working_dir} -o %J.${mut_type}.out -e %J.${mut_type}.err -R "select[mem>5000] rusage[mem=5000]" -M5000 \
     "nextflow run ${nf_script} -c ${config_file} --sample_paths ${sample_paths} --mut_type ${mut_type} --reference_genome ${reference_genome} --high_depth_region ${high_depth_region} --outdir ${outdir}"
 
 ```
