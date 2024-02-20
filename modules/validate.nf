@@ -8,6 +8,8 @@ validParams = [
     mut_type: 'str',
     reference_genome: 'path',
     high_depth_region: 'path',
+    reference_genome_cachedir: 'path',
+    mutmat_kmer: 'int',
     outdir: 'path',
     help: '',
     max_memory: '',

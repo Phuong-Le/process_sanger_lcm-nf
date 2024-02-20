@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# LONG=vcf:,bam:,vcfilter_config:,help
-# OPTS=$(getopt -n hairpin --longoptions $LONG -- "$@")
-
 # parsing arguments
 while [[ "$#" -gt 0 ]]
 do

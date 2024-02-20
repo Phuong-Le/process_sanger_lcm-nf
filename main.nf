@@ -10,9 +10,16 @@ include { pindelFilter } from "$projectDir/modules/pindelFilter.nf"
 include { cgpVaf } from "$projectDir/modules/cgpVaf.nf"
 include { betaBinomFilterIndex } from "$projectDir/modules/betaBinomFilterIndex.nf"
 include { betaBinomFilter } from "$projectDir/modules/betaBinomFilter.nf"
+include { splitRef } from "$projectDir/modules/splitRef.nf"
+include { getMutMat } from "$projectDir/modules/getMutMat.nf"
 
 // validate parameters
 validate(params)
+
+// if reference genome cachedir doesn't exist then create one 
+if ( !file(params.reference_genome_cachedir).exists() ) { 
+    params.reference_genome_cachedir.mkdir()
+    }  
 
 workflow {
     String sample_paths = new File(params.sample_paths).getText('UTF-8')
@@ -47,7 +54,22 @@ workflow {
         .map( sample -> tuple(sample[0], sample[1], sample[2], sample[3], sample[4]) )
     beta_binom_filter_input_ch = beta_binom_index_ch.cross(vcfiltered_relevant_ch)
         .map( sample -> tuple(sample[0][0], sample[1][1], sample[1][2], sample[1][3], sample[1][4], sample[0][1]) )
-    out = betaBinomFilter(beta_binom_filter_input_ch)
-    out.subscribe onNext: { println "Finished ${it[0]}" }, onComplete: { println "Done" }
+    bbinom_filtered_vcf_ch = betaBinomFilter(beta_binom_filter_input_ch)
+    bbinom_filtered_vcf_ch.subscribe onNext: { println "Finished beta binom filtering for ${it[0]}" }, onComplete: { println "Done beta binom filtering" }
 
+    
+    // split reference genome if not cached (ie if cachedir is empty)
+    if ( file(params.reference_genome_cachedir).listFiles().toList().isEmpty() ) {
+        ref_chrom_ch = Channel.fromPath(params.reference_genome)
+            .splitFasta( file: true )
+        split_fastas = splitRef(ref_chrom_ch).toList()
+    } else { 
+        split_fastas = file(params.reference_genome_cachedir).listFiles().toList() 
+    }
+    
+    // generate the mutation matrix - not yet available for Indels
+    if (params.mut_type == 'snp') {
+        mutation_matrix_ch = getMutMat(bbinom_filtered_vcf_ch, split_fastas, params.mutmat_kmer)
+        mutation_matrix_ch.collectFile(name: "${params.outdir}/mutation_matrix.txt", keepHeader: true, skip: 1)
+    }
 }

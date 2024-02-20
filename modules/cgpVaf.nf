@@ -40,7 +40,7 @@ process cgpVaf {
 
     """
     $cmd
-    grep -vE '^(##)' "${match_normal_id}_${sample_id_ls[0]}_${mut_type}_vaf.tsv" | sed 's/#//' > "${pdid}_${mut_type}_vaf.tsv"
+    grep -vE '^(##)' "${match_normal_id}_${sample_id_ls[0]}_${mut_type}_vaf.tsv" | sed 's/^#//' > "${pdid}_${mut_type}_vaf.tsv"
     """
     
 }

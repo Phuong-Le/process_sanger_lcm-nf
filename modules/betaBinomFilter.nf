@@ -6,13 +6,15 @@ process betaBinomFilter {
     tuple val(pdid), val(sample_id), val(match_normal_id), path(vcf_to_filter), path(vcf_tbi_to_filter), path(bed_idx)
 
     output:
-    tuple val(sample_id), path(filtered_vcf)
+    tuple val(sample_id), path(final_vcf)
     
     script:
     vcf_names = vcf_to_filter.getName().tokenize(".")
-    vcf_extension = vcf_names.tail().join(".")
+    vcf_extension = vcf_names.tail().head().join(".") // removing the filename and the gz extension
     filtered_vcf="${sample_id}.${bed_idx.getSimpleName()}.${vcf_extension}"
+    final_vcf="${sample_id}.final.vcf"
     """
     tabix -h -R ${bed_idx} ${vcf_to_filter} > ${filtered_vcf}
+    grep -vE '^(##)' ${filtered_vcf} | sed 's/^#//' > ${final_vcf}
     """
 }
