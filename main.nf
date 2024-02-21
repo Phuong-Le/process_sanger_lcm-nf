@@ -55,8 +55,6 @@ workflow {
     beta_binom_filter_input_ch = beta_binom_index_ch.cross(vcfiltered_relevant_ch)
         .map( sample -> tuple(sample[0][0], sample[1][1], sample[1][2], sample[1][3], sample[1][4], sample[0][1]) )
     bbinom_filtered_vcf_ch = betaBinomFilter(beta_binom_filter_input_ch)
-    bbinom_filtered_vcf_ch.subscribe onNext: { println "Finished beta binom filtering for ${it[0]}" }, onComplete: { println "Done beta binom filtering" }
-
     
     // split reference genome if not cached (ie if cachedir is empty)
     if ( file(params.reference_genome_cachedir).listFiles().toList().isEmpty() ) {
@@ -66,10 +64,15 @@ workflow {
     } else { 
         split_fastas = file(params.reference_genome_cachedir).listFiles().toList() 
     }
+    // only the main chromosomes are allowed
+    chromosomes = (1..22).collect { "chr${it}".toString() } + ['chrX', 'chrY']
+    split_fastas_chrom = split_fastas.findAll { 
+        chromosomes.contains("${it}".tokenize("/").last().tokenize(".").first() ) 
+        }
     
     // generate the mutation matrix - not yet available for Indels
     if (params.mut_type == 'snp') {
-        mutation_matrix_ch = getMutMat(bbinom_filtered_vcf_ch, split_fastas, params.mutmat_kmer)
+        mutation_matrix_ch = getMutMat(bbinom_filtered_vcf_ch, split_fastas_chrom, params.mutmat_kmer)
         mutation_matrix_ch.collectFile(name: "${params.outdir}/mutation_matrix.txt", keepHeader: true, skip: 1)
     }
 }

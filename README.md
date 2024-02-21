@@ -10,14 +10,15 @@ A Nextflow pipeline to process LCM data post-CaVEMan or Pindel variant calling
 - [tabix](https://www.htslib.org/doc/tabix.html)
 - [cgpVAFcommand](https://github.com/cancerit/vafCorrect/tree/dev)
 - [R](https://www.r-project.org/)
-- [MutationsPy](https://github.com/Phuong-Le/MutationsPy)
+
+- [MutationsPy](https://github.com/Phuong-Le/MutationsPy) - no need to install independently as it has become a git submodule
 
 ## Installation
 
-Clone this repository
+Clone this repository, including the MutationsPy submodule
 
 ```
-git clone git@github.com:Phuong-Le/process_sanger_lcm-nf.git
+git clone --recursive git@github.com:Phuong-Le/process_sanger_lcm-nf.git
 ```
 
 ## Usage 
