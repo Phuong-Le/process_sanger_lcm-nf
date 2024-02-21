@@ -1,0 +1,3 @@
+[submodule "bin/MutationsPy"]
+	path = bin/MutationsPy
+	url = https://github.com/Phuong-Le/MutationsPy.git
