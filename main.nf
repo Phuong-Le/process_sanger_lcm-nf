@@ -5,6 +5,7 @@ nextflow.enable.dsl=2
 
 // import processes for main workflow
 include { validate } from "$projectDir/modules/validate.nf"
+include { conpairPileup } from "$projectDir/modules/conpairPileup.nf"
 include { hairpinFilter } from "$projectDir/modules/hairpin.nf"
 include { pindelFilter } from "$projectDir/modules/pindelFilter.nf"
 include { cgpVaf } from "$projectDir/modules/cgpVaf.nf"
@@ -23,6 +24,12 @@ if ( !file(params.reference_genome_cachedir).exists() ) {
 
 workflow {
     String sample_paths = new File(params.sample_paths).getText('UTF-8')
+
+    // Conpair 
+    sample_pileup_input_ch = Channel.of(sample_paths)
+            .splitCsv( header: true, sep : '\t' )
+            .map { row -> tuple( row.sample_id, row.bam ) }
+    pileupSample = conpairPileup(sample_pileup_input_ch)
 
     // Hairpin filtering for SNPs 
     if (params.mut_type=='snp') {
