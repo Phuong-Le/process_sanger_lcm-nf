@@ -4,7 +4,8 @@
 
 validParams = [
     sample_paths: 'path',
-    marker_path: 'path',
+    marker_bed: 'path',
+    marker_txt: 'path',
     vcfilter_config: '',
     mut_type: 'str',
     reference_genome: 'path',

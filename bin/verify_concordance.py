@@ -30,11 +30,6 @@ parser.add_option('-B', '--min_base_quality', help='MIN BASE QUALITY [default: 2
 parser.add_option('-H', '--normal_homozygous_markers_only', help='USE ONLY MARKERS THAT ARE HOMOZYGOUS IN THE NORMAL SAMPLE (concordance will not be affected by CNV)', default=True, action='store_true')
 
 
-ContaminationModel = imp.load_source('/ContaminationModel', './Conpair/ContaminationModel.py')
-ContaminationMarker = imp.load_source('/ContaminationMarker', './Conpair/ContaminationMarker.py')
-MathOperations = imp.load_source('/MathOperations','./Conpair/MathOperations.py')
-Genotypes = imp.load_source('/Genotypes', './Conpair/Genotypes.py')
-
 
 (opts, args) = parser.parse_args()
 
@@ -57,14 +52,14 @@ if not os.path.exists(MARKER_FILE):
     print('ERROR: Marker file {0} cannot be find.'.format(MARKER_FILE))
     sys.exit(2)
     
-Markers = ContaminationMarker.get_markers(MARKER_FILE)
+Markers = get_markers(MARKER_FILE)
 COVERAGE_THRESHOLD = opts.min_cov
 MMQ = opts.min_mapping_quality
 MBQ = opts.min_base_quality
 AA_BB_only = opts.normal_homozygous_markers_only
 
-Normal_genotype_likelihoods = ContaminationMarker.genotype_likelihoods_for_markers(Markers, opts.normal_pileup, min_map_quality=MMQ, min_base_quality=MBQ)
-Tumor_genotype_likelihoods = ContaminationMarker.genotype_likelihoods_for_markers(Markers, opts.tumor_pileup, min_map_quality=MMQ, min_base_quality=MBQ)
+Normal_genotype_likelihoods = genotype_likelihoods_for_markers(Markers, opts.normal_pileup, min_map_quality=MMQ, min_base_quality=MBQ)
+Tumor_genotype_likelihoods = genotype_likelihoods_for_markers(Markers, opts.tumor_pileup, min_map_quality=MMQ, min_base_quality=MBQ)
 
 concordant = 0
 discordant = 0
