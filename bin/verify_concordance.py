@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
 # New York Genome Center
 # SOFTWARE COPYRIGHT NOTICE AGREEMENT
@@ -15,8 +15,8 @@ import optparse
 import math
 from collections import defaultdict
 import imp
-from ContaminationModel import *
-from ContaminationMarker import *
+from Conpair.ContaminationModel import *
+from Conpair.ContaminationMarker import *
 
 desc = """Program to verify tumor-normal sample concordance"""
 parser = optparse.OptionParser(version='%prog version 0.15 3/August/2016', description=desc)
@@ -30,10 +30,10 @@ parser.add_option('-B', '--min_base_quality', help='MIN BASE QUALITY [default: 2
 parser.add_option('-H', '--normal_homozygous_markers_only', help='USE ONLY MARKERS THAT ARE HOMOZYGOUS IN THE NORMAL SAMPLE (concordance will not be affected by CNV)', default=True, action='store_true')
 
 
-ContaminationModel = imp.load_source('/ContaminationModel', './ContaminationModel.py')
-ContaminationMarker = imp.load_source('/ContaminationMarker', './ContaminationMarker.py')
-MathOperations = imp.load_source('/MathOperations','./MathOperations.py')
-Genotypes = imp.load_source('/Genotypes', './Genotypes.py')
+ContaminationModel = imp.load_source('/ContaminationModel', './Conpair/ContaminationModel.py')
+ContaminationMarker = imp.load_source('/ContaminationMarker', './Conpair/ContaminationMarker.py')
+MathOperations = imp.load_source('/MathOperations','./Conpair/MathOperations.py')
+Genotypes = imp.load_source('/Genotypes', './Conpair/Genotypes.py')
 
 
 (opts, args) = parser.parse_args()

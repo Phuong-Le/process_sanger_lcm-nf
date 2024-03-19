@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
 # New York Genome Center
 # SOFTWARE COPYRIGHT NOTICE AGREEMENT
@@ -33,10 +33,10 @@ parser.add_option('-Q', '--min_mapping_quality', help='MIN MAPPING QUALITY [defa
 
 (opts, args) = parser.parse_args()
 
-ContaminationModel = imp.load_source('/ContaminationModel', './ContaminationModel.py')
-ContaminationMarker = imp.load_source('/ContaminationMarker', './ContaminationMarker.py')
-MathOperations = imp.load_source('/MathOperations','./MathOperations.py')
-Genotypes = imp.load_source('/Genotypes', './Genotypes.py')
+ContaminationModel = imp.load_source('/ContaminationModel', './Conpair/ContaminationModel.py')
+ContaminationMarker = imp.load_source('/ContaminationMarker', './Conpair/ContaminationMarker.py')
+MathOperations = imp.load_source('/MathOperations','./Conpair/MathOperations.py')
+Genotypes = imp.load_source('/Genotypes', './Conpair/Genotypes.py')
 
 if not opts.tumor_pileup or not opts.normal_pileup:
     parser.print_help()
