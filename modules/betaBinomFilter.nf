@@ -1,5 +1,5 @@
 process betaBinomFilter {
-    publishDir "${params.outdir}/${pdid}", overwrite: false
+    publishDir "${params.outdir}/${pdid}", overwrite: true
     
     // filtering according to the indices obtained from betaBinomFilterIndex
     input:
@@ -10,7 +10,7 @@ process betaBinomFilter {
     
     script:
     vcf_names = vcf_to_filter.getName().tokenize(".")
-    vcf_extension = vcf_names.tail().head().join(".") // removing the filename and the gz extension
+    vcf_extension = vcf_names.tail().init().join(".") // removing the filename and the gz extension
     filtered_vcf="${sample_id}.${bed_idx.getSimpleName()}.${vcf_extension}"
     final_vcf="${sample_id}.final.vcf"
     """

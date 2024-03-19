@@ -39,30 +39,30 @@ if not os.path.exists(opts.bam):
     print('ERROR: Specified bamfile {0} cannot be found.'.format(opts.bam))
     sys.exit(1)
 
-if opts.conpair_dir:
-    CONPAIR_DIR = opts.conpair_dir
-else:
-    CONPAIR_DIR = os.environ['CONPAIR_DIR']
+# if opts.conpair_dir:
+#     CONPAIR_DIR = opts.conpair_dir
+# else:
+#     CONPAIR_DIR = os.environ['CONPAIR_DIR']
 
-GATK = os.environ['gatk']
+#GATK = os.environ['gatk']
 
 if not os.path.exists(GATK):
     print('ERROR: GATK jar {0} cannot be find.'.format(GATK))
     sys.exit(2)
 
-if opts.markers:
-    MARKER_FILE = opts.markers
-else:
-    MARKER_FILE = os.path.join(CONPAIR_DIR, 'data', 'markers', 'GRCh37.autosomes.phase3_shapeit2_mvncall_integrated.20130502.SNV.genotype.sselect_v4_MAF_0.4_LD_0.8.bed')
+# if opts.markers:
+#     MARKER_FILE = opts.markers
+# else:
+#     MARKER_FILE = os.path.join(CONPAIR_DIR, 'data', 'markers', 'GRCh37.autosomes.phase3_shapeit2_mvncall_integrated.20130502.SNV.genotype.sselect_v4_MAF_0.4_LD_0.8.bed')
 
 if not os.path.exists(MARKER_FILE):
     print('ERROR: Marker file {0} cannot be find.'.format(MARKER_FILE))
     sys.exit(2)
 
-if opts.reference:
-    REFERENCE = opts.reference
-else:
-    REFERENCE = os.path.join(CONPAIR_DIR, 'data', 'genomes', 'human_g1k_v37.fa')
+# if opts.reference:
+#     REFERENCE = opts.reference
+# else:
+#     REFERENCE = os.path.join(CONPAIR_DIR, 'data', 'genomes', 'human_g1k_v37.fa')
 
 if not os.path.exists(REFERENCE):
     print('ERROR: Reference genome {0} cannot be find.'.format(REFERENCE))
@@ -75,9 +75,9 @@ if opts.temp_dir_java:
 else:
     JAVA_TEMP = ""
 
-command_line = ("{6} {0} --java-options \"-Xmx{1}\" Pileup -R {2} -I {3} -L {4} -O {5} " +
+command_line = ("gatk {0} --java-options \"-Xmx{1}\" Pileup -R {2} -I {3} -L {4} -O {5} " +
 				"-verbose -RF NotDuplicateReadFilter -RF CigarContainsNoNOperator " +
-				"-RF MatchingBasesAndQualsReadFilter").format(JAVA_TEMP, opts.xmx_java, REFERENCE, opts.bam, MARKER_FILE, opts.outfile, GATK)
+				"-RF MatchingBasesAndQualsReadFilter").format(JAVA_TEMP, opts.xmx_java, REFERENCE, opts.bam, MARKER_FILE, opts.outfile)
 
 os.system(command_line)
 

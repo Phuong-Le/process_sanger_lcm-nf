@@ -28,8 +28,16 @@ workflow {
     // Conpair 
     sample_pileup_input_ch = Channel.of(sample_paths)
             .splitCsv( header: true, sep : '\t' )
-            .map { row -> tuple( row.sample_id, row.bam ) }
+            .map { row -> tuple( row.sample_id, row.bam, row.bai ) }
     pileupSample = conpairPileup(sample_pileup_input_ch)
+
+    // match_pileup_input_ch = Channel.of(sample_paths)
+    //         .splitCsv( header: true, sep : '\t' )
+    //         .map { row -> tuple( row.match_normal_id, row.bam_match ) }
+    //         .unique()
+    // pileupMatch = conpairPileup(match_pileup_input_ch)
+
+    
 
     // Hairpin filtering for SNPs 
     if (params.mut_type=='snp') {
