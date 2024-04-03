@@ -43,12 +43,15 @@ workflow {
 
     // Concordance between sample and match normal
     concordance_input_ch = pileup_sample.combine(pileup_match)
+        .map { sample -> tuple(sample[1], sample[2], sample[3], sample[5]) }
+    // concordance_input_ch.view()
     concordance_output_ch = verifyConcordance(concordance_input_ch)
         .collectFile( name: 'concordance.txt', newLine: true )
     concordance_output_ch.view()
 
     // Contamination 
     contamination_input_ch = pileup_sample.cross(pileup_match) 
+        .map { sample -> tuple(sample[0][0], sample[1][2], sample[0][1], sample[0][2] ) }
     contamination_input_ch.view()
     contamination_output_ch = conpairContamination(contamination_input_ch)
         .collectFile( name: 'contamination.txt', newLine: true )

@@ -205,6 +205,6 @@ if opts.outfile == "-":
     print("Tumour sample contamination level: " + str(round(100.0*tumour_optimal_val,3)) + "%")
     print("Normal sample contamination level: " + str(round(100.0*normal_optimal_val, 3)) + "%")
 else:
-    outfile.write(opts.tumor_pileup.replace('.pileup', '') + "\t" + opts.normal_pileup.replace('.pileup', '') + "\t" + str(round(100.0*tumour_optimal_val,3)) + "\t" + str(round(100.0*normal_optimal_val, 3)) + "\n")
+    outfile.write(opts.tumor_pileup.replace('.pileup', '') + "\t" + opts.normal_pileup.replace('.pileup', '') + "\t" + str(round(100.0*tumour_optimal_val,3)) + "\t" + str(round(100.0*normal_optimal_val, 3)))
     outfile.close()
 
