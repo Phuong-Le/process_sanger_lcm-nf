@@ -20,7 +20,7 @@ import sys
 import os
 import numpy as np
 from collections import defaultdict
-from MathOperations import *
+from Conpair.MathOperations import *
 from math import log10
 import scipy
 from scipy import stats

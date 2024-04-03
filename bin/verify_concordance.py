@@ -14,7 +14,6 @@ import os
 import optparse
 import math
 from collections import defaultdict
-import imp
 from Conpair.ContaminationModel import *
 from Conpair.ContaminationMarker import *
 

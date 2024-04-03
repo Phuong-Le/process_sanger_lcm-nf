@@ -1,6 +1,6 @@
 process conpairContamination {
     input:
-    tuple val(sample_id), path(sample_pileup), val(match_normal_id), path(match_pileup)
+    tuple val(match_normal_id), val(sample_id), path(sample_pileup), val(match_normal_id), path(match_pileup)
 
     output:
     path(contamination_path)

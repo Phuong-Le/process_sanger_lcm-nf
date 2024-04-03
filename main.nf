@@ -49,6 +49,7 @@ workflow {
 
     // Contamination 
     contamination_input_ch = pileup_sample.cross(pileup_match) 
+    contamination_input_ch.view()
     contamination_output_ch = conpairContamination(contamination_input_ch)
         .collectFile( name: 'contamination.txt', newLine: true )
     contamination_output_ch.view()
@@ -62,14 +63,14 @@ workflow {
     //     vcfiltered_ch = hairpinFilter(hairpin_input_ch, vcfilter_config)
     // }
     
-    // // Quality filtering based on Pindel for Indels 
-    // if (params.mut_type=='indel') {
-    //     vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/indel_default.filter" : params.vcfilter_config
-    //     indel_input_ch = Channel.of(sample_paths)
-    //         .splitCsv( header: true, sep : '\t' )
-    //         .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf, row.bam, row.bai, row.bam_match, row.bai_match ) }
-    //     vcfiltered_ch = pindelFilter(indel_input_ch, vcfilter_config)
-    // }
+    // // // Quality filtering based on Pindel for Indels 
+    // // if (params.mut_type=='indel') {
+    // //     vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/indel_default.filter" : params.vcfilter_config
+    // //     indel_input_ch = Channel.of(sample_paths)
+    // //         .splitCsv( header: true, sep : '\t' )
+    // //         .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf, row.bam, row.bai, row.bam_match, row.bai_match ) }
+    // //     vcfiltered_ch = pindelFilter(indel_input_ch, vcfilter_config)
+    // // }
 
 
     // // cgpVaf 
@@ -84,7 +85,7 @@ workflow {
     //     .map( sample -> tuple(sample[0], sample[1], sample[2], sample[3], sample[4]) )
     // beta_binom_filter_input_ch = beta_binom_index_ch.cross(vcfiltered_relevant_ch)
     //     .map( sample -> tuple(sample[0][0], sample[1][1], sample[1][2], sample[1][3], sample[1][4], sample[0][1]) )
-    // bbinom_filtered_vcf_ch = betaBinomFilter(beta_binom_filter_input_ch)
+    // (bbinom_filtered_vcf_ch, filtered_vcf_noheader_ch) = betaBinomFilter(beta_binom_filter_input_ch)
     
     // // split reference genome if not cached (ie if cachedir is empty)
     // if ( file(params.reference_genome_cachedir).listFiles().toList().isEmpty() ) {

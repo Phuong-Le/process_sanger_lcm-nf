@@ -18,7 +18,7 @@
 
 import os
 import itertools
-from Genotypes import *
+from Conpair.Genotypes import *
 from collections import OrderedDict
 
 
