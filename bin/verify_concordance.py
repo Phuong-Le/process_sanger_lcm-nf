@@ -87,7 +87,7 @@ if opts.outfile == "-":
     print(""+ str(round(100.0*float(concordant)/(concordant+discordant), 2)) + "%\t" + str((concordant+discordant)/len(Markers)))
 else:
     outfile = open(opts.outfile, 'w')
-    outfile.write(opts.tumor_pileup.replace('.pileup', '') + "\t" + opts.normal_pileup.replace('.pileup', '') + "\t" + str(round(100.0*float(concordant)/(concordant+discordant), 2)) + "v\t" + str((concordant+discordant)/len(Markers)))
+    outfile.write(opts.tumor_pileup.replace('.pileup', '') + "\t" + opts.normal_pileup.replace('.pileup', '') + "\t" + str(round(100.0*float(concordant)/(concordant+discordant), 2)) + "\t" + str((concordant+discordant)/len(Markers)))
     outfile.close()
                   
 
