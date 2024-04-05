@@ -7,11 +7,12 @@ process betaBinomFilter {
 
     output:
     tuple val(sample_id), path(final_vcf)
-    
+    path filtered_vcf
+
     script:
     vcf_names = vcf_to_filter.getName().tokenize(".")
-    vcf_extension = vcf_names.tail().head().join(".") // removing the filename and the gz extension
-    filtered_vcf="${sample_id}.${bed_idx.getSimpleName()}.${vcf_extension}"
+    vcf_extension = vcf_names.tail().init().join(".") // removing the filename and the gz extension
+    filtered_vcf="${sample_id}.somatics_filtered.artefacts_filtered.${vcf_extension}"
     final_vcf="${sample_id}.final.vcf"
     """
     tabix -h -R ${bed_idx} ${vcf_to_filter} > ${filtered_vcf}

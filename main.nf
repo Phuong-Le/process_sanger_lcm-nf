@@ -54,7 +54,7 @@ workflow {
         .map( sample -> tuple(sample[0], sample[1], sample[2], sample[3], sample[4]) )
     beta_binom_filter_input_ch = beta_binom_index_ch.cross(vcfiltered_relevant_ch)
         .map( sample -> tuple(sample[0][0], sample[1][1], sample[1][2], sample[1][3], sample[1][4], sample[0][1]) )
-    bbinom_filtered_vcf_ch = betaBinomFilter(beta_binom_filter_input_ch)
+    (bbinom_filtered_vcf_ch, filtered_sigprofiler_vcf_ch) = betaBinomFilter(beta_binom_filter_input_ch)
     
     // split reference genome if not cached (ie if cachedir is empty)
     if ( file(params.reference_genome_cachedir).listFiles().toList().isEmpty() ) {
