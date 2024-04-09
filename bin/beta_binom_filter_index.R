@@ -100,7 +100,7 @@ if (length(sample_vaf_cols) == 1) {
   rho_df = data.frame(rho_est = rho_est, filter_out_by_rho = flt_rho) 
 
   # save artefact filtered NR and NV to disk 
-  NR_somatic_noartefacts = NR_somatic[!flt_rho,]
+  NR_somatic_noartefacts = NR_somatic_nonzero[!flt_rho,]
   NV_somatic_noartefacts = NV_somatic[!flt_rho,]
   write.table(NR_somatic_noartefacts, paste0(outdir,"/NR_somatic_noartefacts.txt"), row.names = T, col.names = T, quote=F)
   write.table(NV_somatic_noartefacts, paste0(outdir,"/NV_somatic_noartefacts.txt"), row.names = T, col.names = T, quote=F)
