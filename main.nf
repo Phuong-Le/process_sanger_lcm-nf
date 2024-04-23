@@ -7,6 +7,7 @@ nextflow.enable.dsl=2
 include { validate } from "$projectDir/modules/validate.nf"
 include { conpairPileup as conpairPileupSample } from "$projectDir/modules/conpairPileup.nf"
 include { conpairPileup as conpairPileupMatch } from "$projectDir/modules/conpairPileup.nf"
+include { conpairFilter } from "$projectDir/modules/conpairFilter.nf"
 include { verifyConcordance } from "$projectDir/modules/verifyConcordance.nf"
 include { conpairContamination } from "$projectDir/modules/conpairContamination.nf"
 include { hairpinFilter } from "$projectDir/modules/hairpin.nf"
@@ -56,6 +57,10 @@ workflow {
     contamination_output_ch = conpairContamination(contamination_input_ch)
         .collectFile( name: 'contamination.txt', newLine: true )
     contamination_output_ch.view()
+
+    // Filtering contamination
+    (sample_paths_conpaired, conpair_log) = conpairFilter(concordance_output_ch, contamination_output_ch, params.sample_paths)
+    sample_paths_conpaired.view()
 
     // Hairpin filtering for SNPs 
     // if (params.mut_type=='snp') {
