@@ -11,7 +11,9 @@ process betaBinomFilterIndex {
     path "germline_ids.txt", optional: true 
     path "somatic_ids.txt", optional: true 
     path "somatic_ids_rho.txt", optional: true 
-
+    path "NR_somatic_noartefacts.txt", optional: true 
+    path "NV_somatic_noartefacts.txt", optional: true 
+    path "genotype_bin.txt", optional: true 
 
     script:
     """

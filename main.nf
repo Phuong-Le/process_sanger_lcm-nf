@@ -7,6 +7,7 @@ nextflow.enable.dsl=2
 include { validate } from "$projectDir/modules/validate.nf"
 include { conpairPileup as conpairPileupSample } from "$projectDir/modules/conpairPileup.nf"
 include { conpairPileup as conpairPileupMatch } from "$projectDir/modules/conpairPileup.nf"
+include { conpairFilter } from "$projectDir/modules/conpairFilter.nf"
 include { verifyConcordance } from "$projectDir/modules/verifyConcordance.nf"
 include { conpairContamination } from "$projectDir/modules/conpairContamination.nf"
 include { hairpinFilter } from "$projectDir/modules/hairpin.nf"
@@ -57,6 +58,10 @@ workflow {
         .collectFile( name: 'contamination.txt', newLine: true )
     contamination_output_ch.view()
 
+    // Filtering contamination
+    (sample_paths_conpaired, conpair_log) = conpairFilter(concordance_output_ch, contamination_output_ch, params.sample_paths)
+    sample_paths_conpaired.view()
+
     // Hairpin filtering for SNPs 
     // if (params.mut_type=='snp') {
     //     vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/snp_default.filter" : params.vcfilter_config
@@ -81,14 +86,14 @@ workflow {
     // cgpVaf_out_ch = cgpVaf(cgpvaf_input_ch, params.mut_type)
     // // cgpVaf_out_ch = cgpVaf(cgpvaf_input_ch, params.mut_type, params.reference_genome, params.high_depth_region) // keeping this in case cgpVaf module changes such that absolute path is no longer required
 
-    // // BetaBinomial filtering for germline and LCM artefacts based on cgpVaf (methods by Tim Coorens)
-    // (beta_binom_index_ch, germline, somatic, rho) = betaBinomFilterIndex(cgpVaf_out_ch) // get the indices for the filtering 
-    // // use hairpin or pindel vcfiltered output to recover the donor-based channels from cgpVaf
-    // vcfiltered_relevant_ch = vcfiltered_ch
-    //     .map( sample -> tuple(sample[0], sample[1], sample[2], sample[3], sample[4]) )
-    // beta_binom_filter_input_ch = beta_binom_index_ch.cross(vcfiltered_relevant_ch)
-    //     .map( sample -> tuple(sample[0][0], sample[1][1], sample[1][2], sample[1][3], sample[1][4], sample[0][1]) )
-    // (bbinom_filtered_vcf_ch, filtered_vcf_noheader_ch) = betaBinomFilter(beta_binom_filter_input_ch)
+    // BetaBinomial filtering for germline and LCM artefacts based on cgpVaf (methods by Tim Coorens)
+    (beta_binom_index_ch, germline, somatic, rho, nr, nv, genotype_bin) = betaBinomFilterIndex(cgpVaf_out_ch) // get the indices for the filtering 
+    // use hairpin or pindel vcfiltered output to recover the donor-based channels from cgpVaf
+    vcfiltered_relevant_ch = vcfiltered_ch
+        .map( sample -> tuple(sample[0], sample[1], sample[2], sample[3], sample[4]) )
+    beta_binom_filter_input_ch = beta_binom_index_ch.cross(vcfiltered_relevant_ch)
+        .map( sample -> tuple(sample[0][0], sample[1][1], sample[1][2], sample[1][3], sample[1][4], sample[0][1]) )
+    (bbinom_filtered_vcf_ch, filtered_sigprofiler_vcf_ch) = betaBinomFilter(beta_binom_filter_input_ch)
     
     // // split reference genome if not cached (ie if cachedir is empty)
     // if ( file(params.reference_genome_cachedir).listFiles().toList().isEmpty() ) {

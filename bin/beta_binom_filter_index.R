@@ -99,6 +99,32 @@ if (length(sample_vaf_cols) == 1) {
   flt_rho = log10(rho_est)<(-1)
   rho_df = data.frame(rho_est = rho_est, filter_out_by_rho = flt_rho) 
 
+  # save artefact filtered NR and NV to disk 
+  NR_somatic_noartefacts = NR_somatic_nonzero[!flt_rho,]
+  NV_somatic_noartefacts = NV_somatic[!flt_rho,]
+  write.table(NR_somatic_noartefacts, paste0(outdir,"/NR_somatic_noartefacts.txt"), row.names = T, col.names = T, quote=F)
+  write.table(NV_somatic_noartefacts, paste0(outdir,"/NV_somatic_noartefacts.txt"), row.names = T, col.names = T, quote=F)
+
+  #Convert genotype matrix in binary genotype
+  XY_chromosomal=grepl("X|Y",rownames(NR_somatic_noartefacts))
+  autosomal=!XY_chromosomal
+  genotype_bin=as.matrix(NV_somatic_noartefacts/NR_somatic_noartefacts)
+  if(gender=="male"){
+    genotype_bin[autosomal,][genotype_bin[autosomal,]<0.1]=0
+    genotype_bin[autosomal,][genotype_bin[autosomal,]>=0.3]=1
+    genotype_bin[XY_chromosomal,][genotype_bin[XY_chromosomal,]<0.2]=0
+    genotype_bin[XY_chromosomal,][genotype_bin[XY_chromosomal,]>=0.6]=1
+    genotype_bin[genotype_bin>0&genotype_bin<1]=0.5
+  }
+  if(gender=="female"){
+    genotype_bin[genotype_bin<0.1]=0
+    genotype_bin[genotype_bin>=0.3]=1
+    genotype_bin[genotype_bin>0&genotype_bin<1]=0.5
+  }
+  write.table(genotype_bin, paste0(outdir,"/genotype_bin.txt"), row.names = T, col.names = T, quote=F)
+
+
+
   # save rho and whether mutation is filtered to disk
   somatic_ids_rho = cbind(somatic_ids, rho_df)
   write.table(somatic_ids_rho, paste0(outdir,"/somatic_ids_rho.txt"), row.names = F, col.names = T, quote=F)
