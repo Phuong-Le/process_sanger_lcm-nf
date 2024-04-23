@@ -183,11 +183,7 @@ if __name__ == "__main__":
     samples_dict = read_samples_list(opts.samples)
     contamination_dict = read_contamination_file(opts.contamination)
     concordance_dict = read_concordance_file(opts.concordance)
-
-    samples_dict = read_samples_list("/lustre/scratch126/casm/team267ms/al35/hackathon2024/sample_paths.txt")
-    contamination_dict = read_contamination_file("/lustre/scratch126/casm/team267ms/al35/hackathon2024/output/work/tmp/59/5fed489c809e7f612e79449a5fac4d/contamination.txt")
-    concordance_dict = read_concordance_file("/lustre/scratch126/casm/team267ms/al35/hackathon2024/output/work/tmp/4d/dfc5001204249c6b389047573e00a8/concordance.txt")
-
+    
     ## Check for contaminated samples 
     contaminated_samples = find_contaminated_ids(contamination_dict)
     print("Samples IDs with contamination > 0.1:", contaminated_samples)
@@ -202,8 +198,9 @@ if __name__ == "__main__":
     
     # Check for samples matching normals other than the Matched normal.
     samples_with_multiple_matched_normals, samples_with_crossed_concordance = check_multiple_concordance(concordance_dict, samples_dict)
+    
     # Print filtered concordance dictionary
-    print("Samples with multiple matched normals:")
+    print("Sample IDs with multiple concordance (excluding match_normal_id):")
     for sample_id, concordance_info in samples_with_multiple_matched_normals.items():
         print(f"Sample ID: {sample_id}")
         for normal_id, info in concordance_info.items():
@@ -211,7 +208,7 @@ if __name__ == "__main__":
             print(f"  Concordance: {info['concordance']}")
             print(f"  Fraction of Markers: {info['fraction_of_markers']}")
     
-    print("Samples with crossed normals:")
+    print("Sample IDs with cross concordance (excluding match_normal_id):")
     for sample_id, concordance_info in samples_with_crossed_concordance.items():
         print(f"Sample ID: {sample_id}")
         for normal_id, info in concordance_info.items():
@@ -219,17 +216,14 @@ if __name__ == "__main__":
             print(f"  Concordance: {info['concordance']}")
             print(f"  Fraction of Markers: {info['fraction_of_markers']}")
 
-    # Exclude sample_ids based on contamination and concordance criteria
+    # Exclude sample_ids based on contamination criteria
     filtered_data_dict = {}
     for sample_id, info in samples_dict.items():
         match_normal_id = info['match_normal_id']
         if (sample_id not in contamination_dict or
             contamination_dict[sample_id]['contamination'] <= 0.1) and \
            (match_normal_id not in contamination_dict or
-            contamination_dict[match_normal_id]['contamination'] <= 0.1) and \
-           (sample_id not in concordance_dict or
-            match_normal_id not in concordance_dict[sample_id] or
-            concordance_dict[sample_id][match_normal_id]['concordance'] >= 90):
+            contamination_dict[match_normal_id]['contamination'] <= 0.1):
             filtered_data_dict[sample_id] = info
     
     ## Update the matched normal id of the swapped samples. 
@@ -237,6 +231,14 @@ if __name__ == "__main__":
         if sample_id in filtered_data_dict:
             for normal_id, info in concordance_info.items():
                 filtered_data_dict[sample_id]['match_normal_id'] = normal_id 
+
+    # Exclude sample_ids based on concordance criteria
+    for sample_id, info in filtered_data_dict.items():
+        match_normal_id = info['match_normal_id']
+        if (sample_id not in concordance_dict or
+            match_normal_id not in concordance_dict[sample_id] or
+            concordance_dict[sample_id][match_normal_id]['concordance'] >= 90):
+            filtered_data_dict[sample_id] = info
 
     # write filtered_data_dict to a file
     output_file = Path(opts.samples)
