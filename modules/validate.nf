@@ -4,6 +4,8 @@
 
 validParams = [
     sample_paths: 'path',
+    concordance_threshold: 'number',
+    contamination_threshold: 'number',
     marker_bed: 'path',
     marker_txt: 'path',
     vcfilter_config: '',
@@ -42,9 +44,15 @@ void validate(Map params) {
                 }
                 break
             
+            case 'number':
+                if (value !instanceof Number) {
+                    invalidValues[key] = [value, 'numeric value']
+                }
+                break
+            
             case 'str':
                 if (value !instanceof String) {
-                    invalidValues[key] = [value, 'integer value']
+                    invalidValues[key] = [value, 'string value']
                 }
                 break
 

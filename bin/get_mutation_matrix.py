@@ -37,7 +37,7 @@ def get_arguments():
     parser.add_argument('--sample_id', required=True,
                         help='sample ID', type = str)
     parser.add_argument('--kmer', '-k', required=False,
-                        help='kmer size, default to 3', type = int)
+                        help='kmer size, default to 3', type = int, default = 3)
     parser.add_argument('--outfile', '-o', required=True,
                         help='output file', type = str)
     return parser

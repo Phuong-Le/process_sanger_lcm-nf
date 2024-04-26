@@ -97,7 +97,7 @@ def read_concordance_file(file_path):
                 # Check if the sample_id key already exists in the concordance_dict
                 if sample_id not in concordance_dict:
                     # If it doesn't exist, create a new entry with an empty dictionary
-                    concordance_dict[sample_id] = {'concordance_data': {}}
+                    concordance_dict[sample_id] = {'concordance_data': {}} ## PHUONG COMMENT: Switch to defaultdict?
                 
                 # Store the concordance information for the sample_id and normal_id pair
                 concordance_dict[sample_id]['concordance_data'][normal_id] = {
