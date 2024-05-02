@@ -15,6 +15,7 @@ include { pindelFilter } from "$projectDir/modules/pindelFilter.nf"
 include { cgpVaf } from "$projectDir/modules/cgpVaf.nf"
 include { betaBinomFilterIndex } from "$projectDir/modules/betaBinomFilterIndex.nf"
 include { betaBinomFilter } from "$projectDir/modules/betaBinomFilter.nf"
+include { getPhylogeny } from "$projectDir/modules/getPhylogeny.nf"
 include { splitRef } from "$projectDir/modules/splitRef.nf"
 include { getMutMat } from "$projectDir/modules/getMutMat.nf"
 
@@ -53,7 +54,6 @@ workflow {
     // concordance_output_ch.view()
 
     // Contamination 
-    
     contamination_input_ch = pileup_match.cross(pileup_sample).view() 
         .map { sample -> tuple(sample[0][0], sample[0][2], sample[1][1], sample[1][2] ) }
     contamination_input_ch.view()
@@ -61,8 +61,8 @@ workflow {
         .collectFile( name: 'contamination.txt', newLine: true )
     contamination_output_ch.view()
 
-    // Filtering contamination
-    (sample_paths_conpaired, conpair_log) = conpairFilter(concordance_output_ch, contamination_output_ch, params.sample_paths)
+    // Filtering contamination based on concordance and contamination
+    (sample_paths_conpaired, conpair_log, concordance_path, contamination_path) = conpairFilter(concordance_output_ch, contamination_output_ch, params.sample_paths)
     sample_paths_conpaired.view()
 
 
@@ -77,30 +77,39 @@ workflow {
         vcfiltered_ch = hairpinFilter(hairpin_input_ch, vcfilter_config)
     }
     
-//     // // Quality filtering based on Pindel for Indels 
-//     // if (params.mut_type=='indel') {
-//     //     vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/indel_default.filter" : params.vcfilter_config
-//     //     indel_input_ch = sample_paths_conpaired
-//     //         .splitCsv( header: true, sep : '\t' )
-//     //         .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf, row.bam, row.bai, row.bam_match, row.bai_match ) }
-//     //     vcfiltered_ch = pindelFilter(indel_input_ch, vcfilter_config)
-//     // }
+    // Quality filtering based on Pindel for Indels 
+    if (params.mut_type=='indel') {
+        vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/indel_default.filter" : params.vcfilter_config
+        indel_input_ch = sample_paths_conpaired
+            .splitCsv( header: true, sep : '\t' )
+            .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf, row.bam, row.bai, row.bam_match, row.bai_match ) }
+        vcfiltered_ch = pindelFilter(indel_input_ch, vcfilter_config)
+    }
 
 
-//     // // cgpVaf 
-//     // cgpvaf_input_ch = vcfiltered_ch.groupTuple( by: 0 ) // group by PDID for cgpVaf
-//     // cgpVaf_out_ch = cgpVaf(cgpvaf_input_ch, params.mut_type)
-//     // // cgpVaf_out_ch = cgpVaf(cgpvaf_input_ch, params.mut_type, params.reference_genome, params.high_depth_region) // keeping this in case cgpVaf module changes such that absolute path is no longer required
+    // cgpVaf 
+    cgpvaf_input_ch = vcfiltered_ch.groupTuple( by: 0 ) // group by PDID for cgpVaf
+    cgpVaf_out_ch = cgpVaf(cgpvaf_input_ch, params.mut_type)
+    // cgpVaf_out_ch = cgpVaf(cgpvaf_input_ch, params.mut_type, params.reference_genome, params.high_depth_region) // keeping this in case cgpVaf module changes such that absolute path is no longer required
 
-//     // // BetaBinomial filtering for germline and LCM artefacts based on cgpVaf (methods by Tim Coorens)
-//     // (beta_binom_index_ch, germline, somatic, rho, phylogenetics_input_ch) = betaBinomFilterIndex(cgpVaf_out_ch) // get the indices for the filtering 
-//     // // use hairpin or pindel vcfiltered output to recover the donor-based channels from cgpVaf
-//     // vcfiltered_relevant_ch = vcfiltered_ch
-//     //     .map( sample -> tuple(sample[0], sample[1], sample[2], sample[3], sample[4]) )
-//     // beta_binom_filter_input_ch = beta_binom_index_ch.cross(vcfiltered_relevant_ch)
-//     //     .map( sample -> tuple(sample[0][0], sample[1][1], sample[1][2], sample[1][3], sample[1][4], sample[0][1]) )
-//     // (bbinom_filtered_vcf_ch, filtered_sigprofiler_vcf_ch) = betaBinomFilter(beta_binom_filter_input_ch)
-    
+    // BetaBinomial filtering for germline and LCM artefacts based on cgpVaf (methods by Tim Coorens)
+    (beta_binom_index_ch, germline, somatic, rho, phylogenetics_input_ch) = betaBinomFilterIndex(cgpVaf_out_ch) // get the indices for the filtering 
+    // use hairpin or pindel vcfiltered output to recover the donor-based channels from cgpVaf
+    vcfiltered_relevant_ch = vcfiltered_ch
+        .map( sample -> tuple(sample[0], sample[1], sample[2], sample[3], sample[4]) )
+    beta_binom_filter_input_ch = beta_binom_index_ch.cross(vcfiltered_relevant_ch)
+        .map( sample -> tuple(sample[0][0], sample[1][1], sample[1][2], sample[1][3], sample[1][4], sample[0][1]) )
+    (bbinom_filtered_vcf_ch, filtered_sigprofiler_vcf_ch) = betaBinomFilter(beta_binom_filter_input_ch)
+
+    phylogenetics_input_ch.view()
+    // Phylogenetics, only run this if there are more than 1 sample per donor (genotype_bin only has one column), AND if mutation type is snp
+    // work in progress
+    if (params.mut_type == 'snp') {
+        phylogenetics_input__filtered_ch = phylogenetics_input_ch.filter { it[3].readLines().first().split(' ').size() > 1 }
+        phylogenetics_input__filtered_ch.view()
+        phylogenetics_output_ch = getPhylogeny(phylogenetics_input_ch)
+    }
+
 //     // // split reference genome if not cached (ie if cachedir is empty)
 //     // if ( file(params.reference_genome_cachedir).listFiles().toList().isEmpty() ) {
 //     //     ref_chrom_ch = Channel.fromPath(params.reference_genome)

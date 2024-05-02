@@ -10,6 +10,8 @@ process conpairFilter {
     output:
     path outfile
     path "*.log"
+    path concordance
+    path contamination
 
     script:
     outfile = "sample_paths_contamination_filtered.txt"
