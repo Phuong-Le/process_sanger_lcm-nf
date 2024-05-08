@@ -60,6 +60,7 @@ def get_contaminated_samples(contamination, contamination_threshold = 0.1):
     return {"contaminated_samples": contaminated_samples, "contaminated_matches": contaminated_matches}
 
 def filter_contaminations(samples_path, concordance_path, contamination_path, outfile, concordance_threshold = 90, contamination_threshold = 0.1):
+    print(f'contamination threshold line 63: {contamination_threshold}')
     samples = pd.read_csv(samples_path, sep = '\t')
     samples_dict = {}
     for row in samples.to_numpy().tolist():

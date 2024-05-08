@@ -16,6 +16,8 @@ include { cgpVaf } from "$projectDir/modules/cgpVaf.nf"
 include { betaBinomFilterIndex } from "$projectDir/modules/betaBinomFilterIndex.nf"
 include { betaBinomFilter } from "$projectDir/modules/betaBinomFilter.nf"
 include { getPhylogeny } from "$projectDir/modules/getPhylogeny.nf"
+include { matrixGeneratorOnSamples } from "$projectDir/modules/matrixGeneratorOnSamples.nf"
+include { matrixGeneratorOnBranches } from "$projectDir/modules/matrixGeneratorOnBranches.nf"
 include { splitRef } from "$projectDir/modules/splitRef.nf"
 include { getMutMat } from "$projectDir/modules/getMutMat.nf"
 
@@ -36,14 +38,14 @@ workflow {
             .splitCsv( header: true, sep : '\t' )
             .map { row -> tuple( row.match_normal_id, row.sample_id, row.bam, row.bai ) }
     pileup_sample = conpairPileupSample(sample_pileup_input_ch)
-    pileup_sample.view()
+    // pileup_sample.view()
     // normal
     match_pileup_input_ch = Channel.of(sample_paths)
             .splitCsv( header: true, sep : '\t' )
             .map { row -> tuple( row.match_normal_id, row.match_normal_id, row.bam_match, row.bai_match ) }
             .unique()
     pileup_match = conpairPileupMatch(match_pileup_input_ch)
-    pileup_match.view()
+    // pileup_match.view()
 
     // Concordance between sample and match normal
     concordance_input_ch = pileup_sample.combine(pileup_match)
@@ -54,16 +56,16 @@ workflow {
     // concordance_output_ch.view()
 
     // Contamination 
-    contamination_input_ch = pileup_match.cross(pileup_sample).view() 
+    contamination_input_ch = pileup_match.cross(pileup_sample)
         .map { sample -> tuple(sample[0][0], sample[0][2], sample[1][1], sample[1][2] ) }
-    contamination_input_ch.view()
+    // contamination_input_ch.view()
     contamination_output_ch = conpairContamination(contamination_input_ch)
         .collectFile( name: 'contamination.txt', newLine: true )
-    contamination_output_ch.view()
+    // contamination_output_ch.view()
 
     // Filtering contamination based on concordance and contamination
     (sample_paths_conpaired, conpair_log, concordance_path, contamination_path) = conpairFilter(concordance_output_ch, contamination_output_ch, params.sample_paths)
-    sample_paths_conpaired.view()
+    // sample_paths_conpaired.view()
 
 
     // filtered sample paths will replace sample paths from here
@@ -102,13 +104,20 @@ workflow {
     (bbinom_filtered_vcf_ch, filtered_sigprofiler_vcf_ch) = betaBinomFilter(beta_binom_filter_input_ch)
 
     phylogenetics_input_ch.view()
-    // Phylogenetics, only run this if there are more than 1 sample per donor (genotype_bin only has one column), AND if mutation type is snp
+    // Phylogenetics, only run this if there are more than 2 sample per donor (genotype_bin only has one column), AND if mutation type is snp
     // work in progress
     if (params.mut_type == 'snp') {
-        phylogenetics_input__filtered_ch = phylogenetics_input_ch.filter { it[3].readLines().first().split(' ').size() > 1 }
+        phylogenetics_input__filtered_ch = phylogenetics_input_ch.filter { it[3].readLines().first().split(' ').size() > 2 }
         phylogenetics_input__filtered_ch.view()
-        phylogenetics_output_ch = getPhylogeny(phylogenetics_input_ch)
+        (branched_vcf, other_files, mpboot_log) = getPhylogeny(phylogenetics_input_ch)
     }
+
+    // generate mutation matrix for the samples by SigProfilerMatrixGenerator
+    matrixGeneratorOnSamples(filtered_sigprofiler_vcf_ch.toList())
+
+    // generate mutation matrix for the branches by SigProfilerMatrixGenerator
+    matrixGeneratorOnBranches(branched_vcf)
+
 
 //     // // split reference genome if not cached (ie if cachedir is empty)
 //     // if ( file(params.reference_genome_cachedir).listFiles().toList().isEmpty() ) {
