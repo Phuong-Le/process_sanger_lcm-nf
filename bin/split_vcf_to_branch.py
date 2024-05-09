@@ -16,7 +16,7 @@ def split_vcf(vcf_path, outdir, prefix):
     for branch in branches:
         vcf_branch = vcf[vcf['Branch'] == branch]
         outfile_with_header = f'{outdir}/vcf_with_header/{prefix}_{branch}_with_header.vcf'
-        outfile = f'{outdir}/vcf_no_header/{prefix}_{branch}.vcf'
+        outfile = f'{outdir}/matrix_generator/{prefix}_{branch}.vcf'
         vcf_branch.to_csv(outfile_with_header, index = False, sep = '\t')
         cmd = f"sed '1s/^/#/' {outfile_with_header} > {outfile}"
         subprocess.run(cmd, shell=True)
