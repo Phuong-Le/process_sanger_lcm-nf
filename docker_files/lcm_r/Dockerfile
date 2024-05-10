@@ -13,8 +13,8 @@ RUN apt-get update \
     && apt-get -y install git-all
 ENV PATH=/opt/conda/bin:$PATH
 
-RUN conda install -y -c r-base=4.3.3 \
-    conda-forge \
+RUN conda install -y -c conda-forge \
+    r-base=4.3.3 \
     r-devtools \ 
     r-biocmanager \
     r-data.table \
