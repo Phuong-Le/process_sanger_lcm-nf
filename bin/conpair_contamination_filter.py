@@ -62,13 +62,11 @@ def get_contaminated_samples(contamination, contamination_threshold = 0.1):
 def filter_contaminations(samples_path, concordance_path, contamination_path, outfile, concordance_threshold = 90, contamination_threshold = 0.1):
     print(f'contamination threshold line 63: {contamination_threshold}')
     samples = pd.read_csv(samples_path, sep = '\t')
-    samples_dict = {}
-    for row in samples.to_numpy().tolist():
-        samples_dict[row[0]] = row
-
+    samples_dict = {row[0]: row for row in samples.to_numpy().tolist()}
+    
     concordance = pd.read_csv(concordance_path, sep = '\t', names = ['sample_id', 'match_id', 'concordance', 'fraction_of_markers'])
     contamination = pd.read_csv(contamination_path, sep = '\t', names = ['sample_id', 'match_id', 'contamination_sample', 'contamination_match'])
-    
+
     # concordance
     concordance_dict_unique = filter_by_concordance(samples_dict, concordance, concordance_threshold)
     samples_concordance_filtered = samples[samples['sample_id'].isin(concordance_dict_unique.keys())]
@@ -76,7 +74,7 @@ def filter_contaminations(samples_path, concordance_path, contamination_path, ou
     contaminated_samples = get_contaminated_samples(contamination, contamination_threshold)
     logging.warning(f'removing {contaminated_samples} as they are contaminated')
     samples_concordance_contamination_filtered = samples_concordance_filtered[(~samples_concordance_filtered['sample_id'].isin(contaminated_samples["contaminated_samples"])) & (~samples_concordance_filtered['match_normal_id'].isin(contaminated_samples["contaminated_matches"]))]
-    
+
     samples_concordance_contamination_filtered.to_csv(outfile, index = False, sep = '\t')
     logging.info(f'the filtered sample paths are now stored in {outfile}')
 
