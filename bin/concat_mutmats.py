@@ -3,6 +3,7 @@
 import pandas as pd
 from collections import defaultdict
 from pathlib import Path
+from glob import glob
 
 import argparse, sys
 
@@ -17,12 +18,11 @@ def load_mutmat(indir):
     Returns:
         dict: a dictionary with key as file extensions, and values as a list of dataframes from files with these extensions
     """
-    mutmat_paths = Path(indir).rglob("*.all")
-    print(list(mutmat_paths))
+    mutmat_paths = glob(f'{indir}/**/*.all', recursive=True)
     mutmat_dict = defaultdict(list)
     for mutmat_path in mutmat_paths:
         mutmat = pd.read_csv(mutmat_path, sep = '\t')
-        context_type = ''.join(mutmat_path.suffixes) # context type based on extensions 
+        context_type = ''.join(Path(mutmat_path).suffixes) # context type based on extensions 
         mutmat_dict[context_type].append(mutmat)
     return mutmat_dict
 
