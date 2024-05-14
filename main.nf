@@ -18,6 +18,7 @@ include { betaBinomFilter } from "$projectDir/modules/betaBinomFilter.nf"
 include { getPhylogeny } from "$projectDir/modules/getPhylogeny.nf"
 include { matrixGeneratorOnSamples } from "$projectDir/modules/matrixGeneratorOnSamples.nf"
 include { matrixGeneratorOnBranches } from "$projectDir/modules/matrixGeneratorOnBranches.nf"
+include { concatMatrices } from "$projectDir/modules/concatMatrices.nf"
 include { splitRef } from "$projectDir/modules/splitRef.nf"
 include { getMutMat } from "$projectDir/modules/getMutMat.nf"
 
@@ -116,8 +117,9 @@ workflow {
     matrixGeneratorOnSamples(filtered_sigprofiler_vcf_ch.toList())
 
     // generate mutation matrix for the branches by SigProfilerMatrixGenerator
-    matrixGeneratorOnBranches(branched_vcf)
-
+    (matrix_by_branches_ch, vcf_with_header_ch) = matrixGeneratorOnBranches(branched_vcf)
+    matrix_by_branches_ch.view()
+    concatMatrices(matrix_by_branches_ch.toList())
 
 //     // // split reference genome if not cached (ie if cachedir is empty)
 //     // if ( file(params.reference_genome_cachedir).listFiles().toList().isEmpty() ) {

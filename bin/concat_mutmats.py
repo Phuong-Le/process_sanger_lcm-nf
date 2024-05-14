@@ -18,6 +18,7 @@ def load_mutmat(indir):
         dict: a dictionary with key as file extensions, and values as a list of dataframes from files with these extensions
     """
     mutmat_paths = Path(indir).rglob("*.all")
+    print(list(mutmat_paths))
     mutmat_dict = defaultdict(list)
     for mutmat_path in mutmat_paths:
         mutmat = pd.read_csv(mutmat_path, sep = '\t')
@@ -54,8 +55,10 @@ def get_combined_mutmat(indir, outdir):
         outdir (path): path to the directory where the combined mutation matrix of all files with the same extensions are written to
     """
     mutmat_dict = load_mutmat(indir)
+    # print(mutmat_dict)
     for context_type in mutmat_dict:
         combined_mutmat = concat_mutmat(mutmat_dict[context_type])
+        # print(combined_mutmat)
         outpath = f'{outdir}/combined_mutmat{context_type}'
         combined_mutmat.to_csv(outpath, sep = '\t', index = False)
 
