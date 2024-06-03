@@ -39,34 +39,27 @@ workflow {
             .splitCsv( header: true, sep : '\t' )
             .map { row -> tuple( row.match_normal_id, row.sample_id, row.bam, row.bai ) }
     pileup_sample = conpairPileupSample(sample_pileup_input_ch)
-    // pileup_sample.view()
     // normal
     match_pileup_input_ch = Channel.of(sample_paths)
             .splitCsv( header: true, sep : '\t' )
             .map { row -> tuple( row.match_normal_id, row.match_normal_id, row.bam_match, row.bai_match ) }
             .unique()
     pileup_match = conpairPileupMatch(match_pileup_input_ch)
-    // pileup_match.view()
 
     // Concordance between sample and match normal
     concordance_input_ch = pileup_sample.combine(pileup_match)
         .map { sample -> tuple(sample[1], sample[2], sample[3], sample[5]) }
-    // concordance_input_ch.view()
     concordance_output_ch = verifyConcordance(concordance_input_ch)
         .collectFile( name: 'concordance.txt', newLine: true )
-    // concordance_output_ch.view()
 
     // Contamination 
     contamination_input_ch = pileup_match.cross(pileup_sample)
-        .map { sample -> tuple(sample[0][0], sample[0][2], sample[1][1], sample[1][2] ) }
-    // contamination_input_ch.view()
+        .map { sample -> tuple(sample[0][0], sample[0][2], sample[1][1], sample[1][2]) }
     contamination_output_ch = conpairContamination(contamination_input_ch)
         .collectFile( name: 'contamination.txt', newLine: true )
-    // contamination_output_ch.view()
 
     // Filtering contamination based on concordance and contamination
     (sample_paths_conpaired, conpair_log, concordance_path, contamination_path) = conpairFilter(concordance_output_ch, contamination_output_ch, params.sample_paths)
-    // sample_paths_conpaired.view()
 
 
     // filtered sample paths will replace sample paths from here
@@ -104,22 +97,23 @@ workflow {
         .map( sample -> tuple(sample[0][0], sample[1][1], sample[1][2], sample[1][3], sample[1][4], sample[0][1]) )
     (bbinom_filtered_vcf_ch, filtered_sigprofiler_vcf_ch) = betaBinomFilter(beta_binom_filter_input_ch)
 
-    phylogenetics_input_ch.view()
+
     // Phylogenetics, only run this if there are more than 2 sample per donor (genotype_bin only has one column), AND if mutation type is snp
     // work in progress
-    if (params.mut_type == 'snp') {
+    if (params.mut_type == 'snp' && params.phylogenetics == true) {
         phylogenetics_input__filtered_ch = phylogenetics_input_ch.filter { it[3].readLines().first().split(' ').size() > 2 }
         phylogenetics_input__filtered_ch.view()
         (branched_vcf, other_files, mpboot_log) = getPhylogeny(phylogenetics_input_ch)
+        // generate mutation matrix for the branches by SigProfilerMatrixGenerator
+        (matrix_by_branches_ch, vcf_with_header_ch) = matrixGeneratorOnBranches(branched_vcf)
+        matrix_by_branches_ch.view()
+        concatMatrices(matrix_by_branches_ch.toList())
     }
 
     // generate mutation matrix for the samples by SigProfilerMatrixGenerator
     matrixGeneratorOnSamples(filtered_sigprofiler_vcf_ch.toList())
 
-    // generate mutation matrix for the branches by SigProfilerMatrixGenerator
-    (matrix_by_branches_ch, vcf_with_header_ch) = matrixGeneratorOnBranches(branched_vcf)
-    matrix_by_branches_ch.view()
-    concatMatrices(matrix_by_branches_ch.toList())
+    
 
 //     // // split reference genome if not cached (ie if cachedir is empty)
 //     // if ( file(params.reference_genome_cachedir).listFiles().toList().isEmpty() ) {

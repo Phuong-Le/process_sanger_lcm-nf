@@ -12,6 +12,7 @@ validParams = [
     mut_type: 'str',
     reference_genome: 'path',
     high_depth_region: 'path',
+    phylogenetics: 'boolean',
     reference_genome_cachedir: 'path',
     mutmat_kmer: 'int',
     outdir: 'path',
@@ -60,6 +61,12 @@ void validate(Map params) {
                 File dir = new File(value)
                 if (!(dir.exists() || dir.mkdirs())) {
                     invalidValues[key] = [value, 'directory path (invalid path or insufficient permissions)']
+                }
+                break
+            
+            case 'boolean':
+                if (value !instanceof Boolean) {
+                    invalidValues[key] = [value, 'boolean value']
                 }
                 break
             

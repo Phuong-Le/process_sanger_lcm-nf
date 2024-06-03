@@ -1,8 +1,8 @@
 process concatMatrices {
-
+    publishDir "${params.outdir}", overwrite: false
 
     input:
-    path matrix_dirs, stageAs: "indir/*"
+    path matrix_dirs, stageAs: "indir/matrix_generator*"
 
     output:
     path outdir
