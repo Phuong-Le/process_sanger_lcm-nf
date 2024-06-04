@@ -5,7 +5,8 @@
 validParams = [
     sample_paths: 'path',
     concordance_threshold: 'number',
-    contamination_threshold: 'number',
+    contamination_threshold_samples: 'number',
+    contamination_threshold_match: 'number',
     marker_bed: 'path',
     marker_txt: 'path',
     vcfilter_config: '',

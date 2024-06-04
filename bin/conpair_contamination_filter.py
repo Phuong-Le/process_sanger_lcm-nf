@@ -40,7 +40,7 @@ def filter_by_concordance(samples_dict, concordance, concordance_threshold = 90)
     return concordance_dict_unique
     
 
-def get_contaminated_samples(contamination, contamination_threshold = 0.1):
+def get_contaminated_samples(contamination, contamination_threshold_samples = 0.3, contamination_threshold_match = 5):
     """identify contaminated samples based on the threshold 
 
     Args:
@@ -50,17 +50,17 @@ def get_contaminated_samples(contamination, contamination_threshold = 0.1):
     Returns:
         dict: contaminated samples for the samples and the match normal
     """
-    logging.info(f'contamination threhold is {contamination_threshold}')
+    logging.info(f'contamination threhold for the samples is {contamination_threshold_samples}')
+    logging.info(f'contamination threhold for the match normal is {contamination_threshold_match}')
     # contamination for the samples
     sample_contamination = dict(contamination[['sample_id', 'contamination_sample']].to_numpy().tolist())
-    contaminated_samples = [sample for sample in sample_contamination if sample_contamination[sample] > contamination_threshold]
+    contaminated_samples = [sample for sample in sample_contamination if sample_contamination[sample] > contamination_threshold_samples]
     # contamination for the match normal
     match_contamination = dict(contamination[['match_id', 'contamination_match']].to_numpy().tolist())
-    contaminated_matches = [sample for sample in match_contamination if match_contamination[sample] > contamination_threshold]
+    contaminated_matches = [sample for sample in match_contamination if match_contamination[sample] > contamination_threshold_match]
     return {"contaminated_samples": contaminated_samples, "contaminated_matches": contaminated_matches}
 
-def filter_contaminations(samples_path, concordance_path, contamination_path, outfile, concordance_threshold = 90, contamination_threshold = 0.1):
-    print(f'contamination threshold line 63: {contamination_threshold}')
+def filter_contaminations(samples_path, concordance_path, contamination_path, outfile, concordance_threshold = 90, contamination_threshold_samples = 0.3, contamination_threshold_match = 5):
     samples = pd.read_csv(samples_path, sep = '\t')
     samples_dict = {row[0]: row for row in samples.to_numpy().tolist()}
     
@@ -71,7 +71,7 @@ def filter_contaminations(samples_path, concordance_path, contamination_path, ou
     concordance_dict_unique = filter_by_concordance(samples_dict, concordance, concordance_threshold)
     samples_concordance_filtered = samples[samples['sample_id'].isin(concordance_dict_unique.keys())]
     # contamination for the samples
-    contaminated_samples = get_contaminated_samples(contamination, contamination_threshold)
+    contaminated_samples = get_contaminated_samples(contamination, contamination_threshold_samples = contamination_threshold_samples, contamination_threshold_match = contamination_threshold_match)
     logging.warning(f'removing {contaminated_samples} as they are contaminated')
     samples_concordance_contamination_filtered = samples_concordance_filtered[(~samples_concordance_filtered['sample_id'].isin(contaminated_samples["contaminated_samples"])) & (~samples_concordance_filtered['match_normal_id'].isin(contaminated_samples["contaminated_matches"]))]
 
@@ -90,12 +90,14 @@ def get_arguments():
                         help='output file', type = str)
     parser.add_argument('--concordance_threshold', required=False,
                         help='concordance threshold, default to 90', type = float, default = 90)
-    parser.add_argument('--contamination_threshold', required=False,
-                        help='contamination threshold', type = float, default = 0.1)
+    parser.add_argument('--contamination_threshold_samples', required=False,
+                        help='contamination threshold for the samples', type = float, default = 0.3)
+    parser.add_argument('--contamination_threshold_match', required=False,
+                        help='contamination threshold for the match normal', type = float, default = 5)
     return parser
 
 def main(args):
-    filter_contaminations(args.samples_path, args.concordance_path, args.contamination_path, args.outfile, concordance_threshold = args.concordance_threshold, contamination_threshold = args.contamination_threshold)
+    filter_contaminations(args.samples_path, args.concordance_path, args.contamination_path, args.outfile, concordance_threshold = args.concordance_threshold, contamination_threshold_samples = args.contamination_threshold, contamination_threshold_match = args.contamination_threshold_match)
 
 if __name__ == "__main__":
     args = get_arguments().parse_args()

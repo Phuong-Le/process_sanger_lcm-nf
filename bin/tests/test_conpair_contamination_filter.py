@@ -93,7 +93,7 @@ def test_filter_by_concordance_one_no_match(caplog):
 def test_get_contaminated_samples():
     contamination = pd.DataFrame(
         [['PD52103n_lo0002', 'PD52103b', 0.094, 0.015],
-         ['PD47151n_lo0002', 'PD47151b', 0.122, 0.025]],
+         ['PD47151n_lo0002', 'PD47151b', 0.5, 0.025]],
         columns = ['sample_id', 'match_id', 'contamination_sample', 'contamination_match']
     )
     expected = {"contaminated_samples": ['PD47151n_lo0002'], "contaminated_matches": []}
@@ -101,8 +101,8 @@ def test_get_contaminated_samples():
     
 def test_get_contaminated_match():
     contamination = pd.DataFrame(
-        [['PD52103n_lo0002', 'PD52103b', 0.094, 0.15],
-         ['PD47151n_lo0002', 'PD47151b', 0.122, 0.025]],
+        [['PD52103n_lo0002', 'PD52103b', 0.094, 10],
+         ['PD47151n_lo0002', 'PD47151b', 0.5, 0.025]],
         columns = ['sample_id', 'match_id', 'contamination_sample', 'contamination_match']
     )
     expected = {"contaminated_samples": ['PD47151n_lo0002'], "contaminated_matches": ['PD52103b']}
