@@ -97,7 +97,7 @@ def get_arguments():
     return parser
 
 def main(args):
-    filter_contaminations(args.samples_path, args.concordance_path, args.contamination_path, args.outfile, concordance_threshold = args.concordance_threshold, contamination_threshold_samples = args.contamination_threshold, contamination_threshold_match = args.contamination_threshold_match)
+    filter_contaminations(args.samples_path, args.concordance_path, args.contamination_path, args.outfile, concordance_threshold = args.concordance_threshold, contamination_threshold_samples = args.contamination_threshold_samples, contamination_threshold_match = args.contamination_threshold_match)
 
 if __name__ == "__main__":
     args = get_arguments().parse_args()
