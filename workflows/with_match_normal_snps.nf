@@ -12,6 +12,8 @@ include { getPhylogeny } from "$projectDir/modules/getPhylogeny.nf"
 include { matrixGeneratorOnSamples } from "$projectDir/modules/matrixGeneratorOnSamples.nf"
 include { matrixGeneratorOnBranches } from "$projectDir/modules/matrixGeneratorOnBranches.nf"
 include { concatMatrices } from "$projectDir/modules/concatMatrices.nf"
+include { sigprofilerPlotSnp } from "$projectDir/modules/sigprofilerPlotSnp.nf"
+
 
 
 workflow WITH_MATCH_NORMAL_SNP {
@@ -80,21 +82,24 @@ workflow WITH_MATCH_NORMAL_SNP {
         .map( sample -> tuple(sample[0], sample[1], sample[2], sample[3], sample[4]) )
     beta_binom_filter_input_ch = beta_binom_index_ch.cross(vcfiltered_relevant_ch)
         .map( sample -> tuple(sample[0][0], sample[1][1], sample[1][2], sample[1][3], sample[1][4], sample[0][1]) )
-    (bbinom_filtered_vcf_ch, filtered_sigprofiler_vcf_ch) = betaBinomFilter(beta_binom_filter_input_ch)
+    (bbinom_filtered_vcf_ch, bbinom_filtered_vcf_with_header_ch) = betaBinomFilter(beta_binom_filter_input_ch)
 
 
     // Phylogenetics, only run this if there are more than 2 sample per donor (genotype_bin only has one column), AND if mutation type is snp
-    // work in progress
     if (params.phylogenetics == true) {
         phylogenetics_input__filtered_ch = phylogenetics_input_ch.filter { it[3].readLines().first().split(' ').size() > 2 }
         phylogenetics_input__filtered_ch.view()
         (branched_vcf, other_files, mpboot_log) = getPhylogeny(phylogenetics_input_ch)
         // generate mutation matrix for the branches by SigProfilerMatrixGenerator
         (matrix_by_branches_ch, vcf_with_header_ch) = matrixGeneratorOnBranches(branched_vcf)
-        matrix_by_branches_ch.view()
         concatMatrices(matrix_by_branches_ch.toList())
     }
 
     // generate mutation matrix for the samples by SigProfilerMatrixGenerator
-    matrixGeneratorOnSamples(filtered_sigprofiler_vcf_ch.toList())
+    bbinom_filtered_vcf_ch.toList().view()
+    sample_mutmat = matrixGeneratorOnSamples(bbinom_filtered_vcf_ch.toList())
+    // plot spectra
+    sigprofilerPlotSnp(sample_mutmat)
+
+
 }

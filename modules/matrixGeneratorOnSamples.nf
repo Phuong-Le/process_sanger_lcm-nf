@@ -5,10 +5,10 @@ process matrixGeneratorOnSamples {
     path vcf_ls, stageAs: 'sample_mutmat/*'
 
     output:
-    path publish_dir
+    path mutmat_dir
 
     script:
-    publish_dir = "sample_mutmat/output"
+    mutmat_dir = "sample_mutmat/output"
     """
     SigProfilerMatrixGenerator matrix_generator sample_mutmat GRCh38 sample_mutmat
     """
