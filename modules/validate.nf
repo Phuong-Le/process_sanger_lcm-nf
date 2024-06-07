@@ -3,6 +3,7 @@
 
 
 validParams = [
+    with_match_normal: 'boolean',
     sample_paths: 'path',
     concordance_threshold: 'number',
     contamination_threshold_samples: 'number',
@@ -14,8 +15,6 @@ validParams = [
     reference_genome: 'path',
     high_depth_region: 'path',
     phylogenetics: 'boolean',
-    reference_genome_cachedir: 'path',
-    mutmat_kmer: 'int',
     outdir: 'path',
     help: '',
     max_memory: '',

@@ -79,18 +79,17 @@ if (length(sample_vaf_cols) == 1) {
   }
 
   # Filter out germline using exact binomial test
-  # germline=exact.binomial(gender=gender,NV=NV,NR=NR,cutoff = -5) #determine which variants are germline
-  # # save indices to disk
-  # germline_ids = ids[germline,]
-  # somatic_ids = ids[!germline,]
-  # write.table(germline_ids, paste0(outdir,"/germline_ids.txt"), row.names = F, col.names = T, quote=F)
-  # write.table(somatic_ids, paste0(outdir,"/somatic_ids.txt"), row.names = F, col.names = T, quote=F)
+  germline=exact.binomial(gender=gender,NV=NV,NR=NR,cutoff = -5) #determine which variants are germline
+  # save indices to disk
+  germline_ids = ids[germline,]
+  somatic_ids = ids[!germline,]
+  write.table(germline_ids, paste0(outdir,"/germline_ids.txt"), row.names = F, col.names = T, quote=F)
+  write.table(somatic_ids, paste0(outdir,"/somatic_ids.txt"), row.names = F, col.names = T, quote=F)
 
 
   # Use beta-binomial filter on shared muts (unique muts would pass anyway) - filter out LCM artefacts
-  NR_somatic=NR
-  NV_somatic=NV
-  somatic_ids = ids
+  NR_somatic=NR[!germline,]
+  NV_somatic=NV[!germline,]
 
   NR_somatic_nonzero=NR_somatic
   NR_somatic_nonzero[NR_somatic_nonzero==0]=1
