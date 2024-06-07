@@ -64,7 +64,7 @@ def get_combined_mutmat(indir, outdir):
 
 
 def get_arguments():
-    parser = argparse.ArgumentParser(description='Check concordance and contamination')
+    parser = argparse.ArgumentParser(description='Combining mutation matrices for the branches across donors')
     parser.add_argument('--indir', required=True,
                         help="path to the directory where the mutation matrix with extensions '.all' will be recursively searched for", type = str)
     parser.add_argument('--outdir', required=True,

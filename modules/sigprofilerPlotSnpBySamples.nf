@@ -1,4 +1,4 @@
-process sigprofilerPlotSnp {
+process sigprofilerPlotSnpBySamples {
     publishDir "${params.outdir}", overwrite: false
 
     input:

@@ -12,7 +12,8 @@ include { getPhylogeny } from "$projectDir/modules/getPhylogeny.nf"
 include { matrixGeneratorOnSamples } from "$projectDir/modules/matrixGeneratorOnSamples.nf"
 include { matrixGeneratorOnBranches } from "$projectDir/modules/matrixGeneratorOnBranches.nf"
 include { concatMatrices } from "$projectDir/modules/concatMatrices.nf"
-include { sigprofilerPlotSnp } from "$projectDir/modules/sigprofilerPlotSnp.nf"
+include { sigprofilerPlotSnpBySamples } from "$projectDir/modules/sigprofilerPlotSnpBySamples.nf"
+include { sigprofilerPlotSnpByBranches } from "$projectDir/modules/sigprofilerPlotSnpByBranches.nf"
 
 
 
@@ -92,14 +93,15 @@ workflow WITH_MATCH_NORMAL_SNP {
         (branched_vcf, other_files, mpboot_log) = getPhylogeny(phylogenetics_input_ch)
         // generate mutation matrix for the branches by SigProfilerMatrixGenerator
         (matrix_by_branches_ch, vcf_with_header_ch) = matrixGeneratorOnBranches(branched_vcf)
-        concatMatrices(matrix_by_branches_ch.toList())
+        branch_mutmat = concatMatrices(matrix_by_branches_ch.toList())
+        sigprofilerPlotSnpByBranches(branch_mutmat)
     }
 
     // generate mutation matrix for the samples by SigProfilerMatrixGenerator
     bbinom_filtered_vcf_ch.toList().view()
     sample_mutmat = matrixGeneratorOnSamples(bbinom_filtered_vcf_ch.toList())
     // plot spectra
-    sigprofilerPlotSnp(sample_mutmat)
+    sigprofilerPlotSnpBySamples(sample_mutmat)
 
 
 }
