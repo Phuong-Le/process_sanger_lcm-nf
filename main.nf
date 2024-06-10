@@ -17,9 +17,9 @@ validate(params)
 include { singularityPreflight } from "$projectDir/modules/singularity"
 // If Singularity is used as the container engine and not showing help message, do preflight check to prevent parallel pull issues
 // Related issue: https://github.com/nextflow-io/nextflow/issues/1210
-// if (workflow.containerEngine == 'singularity') {
-//     singularityPreflight(workflow.container, params.singularity_cachedir)
-// }
+if (workflow.containerEngine == 'singularity') {
+    singularityPreflight(workflow.container, params.singularity_cachedir)
+}
 
 
 workflow {

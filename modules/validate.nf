@@ -4,6 +4,7 @@
 
 validParams = [
     with_match_normal: 'boolean',
+    singularity_cachedir: 'path',
     sample_paths: 'path',
     concordance_threshold: 'number',
     contamination_threshold_samples: 'number',
