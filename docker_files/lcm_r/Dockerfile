@@ -15,22 +15,10 @@ ENV PATH=/opt/conda/bin:$PATH
 
 RUN conda install -y -c conda-forge \
     r-base=4.3.3 \
-    r-devtools \ 
-    r-biocmanager \
     r-data.table \
-    r-vgam \
-    r-ape \
-    r-ggplot2 
-RUN conda install -y -c bioconda \
-    bioconductor-ggtree 
-RUN R -e "devtools::install_git('https://github.com/NickWilliamsSanger/treemut')"
-
+    r-vgam 
 
 # testing that everything is installed correctly
 RUN R -e "library(data.table); \
     library(VGAM); \
-    library(ape); \
-    library(ggplot2); \
-    library(ggtree); \
-    library(treemut); \
     print('all packages are ready to be used')"
