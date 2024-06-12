@@ -22,7 +22,7 @@ void singularityPreflight(LinkedHashMap workflowContainer, String singularityCac
 
     // Download all the images that do not exist yet
     toDownload.each { container, targetName ->
-        log.info("${container} is not found. Pulling now...")
+        log.info("${container} is not found in cached directory ${singularityCacheDir}. Pulling now...")
         process = "singularity pull --dir ${singularityCacheDir} ${targetName} docker://${container}".execute()
         process.waitFor()
 
