@@ -3,13 +3,19 @@
 
 
 validParams = [
+    with_match_normal: 'boolean',
+    singularity_cachedir: 'path',
     sample_paths: 'path',
+    concordance_threshold: 'number',
+    contamination_threshold_samples: 'number',
+    contamination_threshold_match: 'number',
+    marker_bed: 'path',
+    marker_txt: 'path',
     vcfilter_config: '',
     mut_type: 'str',
     reference_genome: 'path',
     high_depth_region: 'path',
-    reference_genome_cachedir: 'path',
-    mutmat_kmer: 'int',
+    phylogenetics: 'boolean',
     outdir: 'path',
     help: '',
     max_memory: '',
@@ -40,9 +46,15 @@ void validate(Map params) {
                 }
                 break
             
+            case 'number':
+                if (value !instanceof Number) {
+                    invalidValues[key] = [value, 'numeric value']
+                }
+                break
+            
             case 'str':
                 if (value !instanceof String) {
-                    invalidValues[key] = [value, 'integer value']
+                    invalidValues[key] = [value, 'string value']
                 }
                 break
 
@@ -50,6 +62,12 @@ void validate(Map params) {
                 File dir = new File(value)
                 if (!(dir.exists() || dir.mkdirs())) {
                     invalidValues[key] = [value, 'directory path (invalid path or insufficient permissions)']
+                }
+                break
+            
+            case 'boolean':
+                if (value !instanceof Boolean) {
+                    invalidValues[key] = [value, 'boolean value']
                 }
                 break
             
