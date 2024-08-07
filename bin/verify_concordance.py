@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # New York Genome Center
 # SOFTWARE COPYRIGHT NOTICE AGREEMENT

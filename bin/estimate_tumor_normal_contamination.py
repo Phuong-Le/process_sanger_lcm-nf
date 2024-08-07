@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # New York Genome Center
 # SOFTWARE COPYRIGHT NOTICE AGREEMENT
@@ -13,7 +13,7 @@
 import sys
 import os
 import optparse
-import imp
+# import imp
 from collections import defaultdict
 import numpy as np
 from math import pow

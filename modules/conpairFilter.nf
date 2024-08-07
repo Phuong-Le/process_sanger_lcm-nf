@@ -1,5 +1,5 @@
 process conpairFilter {
-    publishDir "${params.outdir}", overwrite: false
+    publishDir "${params.outdir}/conpair_out", overwrite: false
 
     input:
     path concordance

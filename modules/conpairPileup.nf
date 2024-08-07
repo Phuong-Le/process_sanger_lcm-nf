@@ -1,5 +1,5 @@
 process conpairPileup {
-    publishDir "${params.outdir}/pileup", overwrite: false
+    publishDir "${params.outdir}/conpair_out/pileup", overwrite: false
 
     input:
     tuple val(match_normal_id), val(sample_id), path(bam), path(bai)
