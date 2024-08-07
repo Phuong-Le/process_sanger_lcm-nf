@@ -116,7 +116,7 @@ workflow {
                 sample_path_content = Channel.of(sample_paths)
                     .splitCsv( header: true, sep : '\t' )
                     .map{ row -> tuple( row.pdid, row.topology, row.nr_path, row.nv_path, row.genotype_bin_path ) }
-                PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY(mutToTree_input_ch, outdir_basename)
+                PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY(sample_path_content, outdir_basename)
             }
             else {
                 // process input sample paths 
