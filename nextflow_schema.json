@@ -10,9 +10,9 @@
       "type": "object",
       "fa_icon": "fas fa-terminal",
       "description": "Define where the pipeline should find input data and save output data.",
-      "required": ["sample_paths", "reference_genome", "outdir"],
+      "required": ["samplesheet", "reference_genome", "outdir"],
       "properties": {
-        "sample_paths": {
+        "samplesheet": {
           "type": "string",
           "description": "A file that contains paths to relevant files for the processes in the pipeline, with headers similar to demo_files/lcm_processing_input_indel.tsv for Indels or demo_files/lcm_processing_input_snv.tsv for SNVs."
         },

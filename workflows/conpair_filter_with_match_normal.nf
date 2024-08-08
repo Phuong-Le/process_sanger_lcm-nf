@@ -6,19 +6,19 @@ include { conpairContamination } from "$projectDir/modules/conpairContamination.
 
 workflow CONPAIR_FILTER_WITH_MATCH_NORMAL {
     take:
-    sample_paths
+    samplesheet
 
     main:
-    sample_paths = new File(sample_paths).getText('UTF-8')
+    samplesheet = new File(samplesheet).getText('UTF-8')
 
     // pileup
     // sample
-    sample_pileup_input_ch = Channel.of(sample_paths)
+    sample_pileup_input_ch = Channel.of(samplesheet)
             .splitCsv( header: true, sep : '\t' )
             .map { row -> tuple( row.match_normal_id, row.sample_id, row.bam, row.bai ) }
     pileup_sample = conpairPileupSample(sample_pileup_input_ch)
     // normal
-    match_pileup_input_ch = Channel.of(sample_paths)
+    match_pileup_input_ch = Channel.of(samplesheet)
             .splitCsv( header: true, sep : '\t' )
             .map { row -> tuple( row.match_normal_id, row.match_normal_id, row.bam_match, row.bai_match ) }
             .unique()
@@ -37,9 +37,9 @@ workflow CONPAIR_FILTER_WITH_MATCH_NORMAL {
         .collectFile( name: 'conpair_out/contamination.txt', newLine: true )
 
     // Filtering contamination based on concordance and contamination
-    (sample_paths_conpaired, conpair_log, concordance_path, contamination_path) = conpairFilter(concordance_output_ch, contamination_output_ch, params.sample_paths)
+    (samplesheet_conpaired, conpair_log, concordance_path, contamination_path) = conpairFilter(concordance_output_ch, contamination_output_ch, params.samplesheet)
 
 
     emit: 
-    sample_paths_conpaired
+    samplesheet_conpaired
 } 

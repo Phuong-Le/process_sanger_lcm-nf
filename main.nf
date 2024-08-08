@@ -23,20 +23,15 @@ if (workflow.containerEngine == 'singularity') {
     singularityPreflight(workflow.container, params.singularity_cachedir)
 }
 
-// // print help message, with typical command line usage
-// if (params.help) {
-//   def String command = """nextflow run process_sanger_lcm-nf \\
-//     --sample_paths /path/to/sample_sheet.csv \\
-//     --mut_type snv \\
-//     --reference_genome /path/to/genome.fa \\
-//     --high_depth_bed /path/to/HiDepth.bed.gz \\
-//     --outdir out/""".stripIndent()
-//   log.info paramsHelp("nextflow run process_sanger_lcm-nf")
-//   exit 0
-// }
-// print help message, return typical command line usage for the pipeline
+// print help message, with typical command line usage
 if (params.help) {
-  log.info paramsHelp("nextflow run low_input_trees --sample_sheet sample_sheet.csv --sequencing_type WGS --outdir out/")
+  def String command = """nextflow run process_sanger_lcm-nf \\
+    --samplesheet /path/to/sample_sheet.csv \\
+    --mut_type snv \\
+    --reference_genome /path/to/genome.fa \\
+    --high_depth_bed /path/to/HiDepth.bed.gz \\
+    --outdir out/""".stripIndent()
+  log.info paramsHelp(command)
   exit 0
 }
 
@@ -53,24 +48,24 @@ workflow {
 
         // conpair 
         if (params.conpair == true) {
-            CONPAIR_FILTER_WITH_MATCH_NORMAL(params.sample_paths) 
+            CONPAIR_FILTER_WITH_MATCH_NORMAL(params.samplesheet) 
         }
 
         // filtering snps 
         if (params.filter_snp == true) {
             vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/snp_default.filter" : params.vcfilter_config
             if (params.conpair == true) {
-                sample_paths_content_ch = CONPAIR_FILTER_WITH_MATCH_NORMAL.out
+                samplesheet_content_ch = CONPAIR_FILTER_WITH_MATCH_NORMAL.out
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_snp, row.vcf_tbi_snp, row.bam, row.bai, row.bas, row.met, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_SNP(sample_paths_content_ch, vcfilter_config)
+                FILTER_WITH_MATCH_NORMAL_SNP(samplesheet_content_ch, vcfilter_config)
             }
             else {
-                sample_paths = new File(params.sample_paths).getText('UTF-8')
-                sample_paths_content_ch = Channel.of(sample_paths)
+                samplesheet = new File(params.samplesheet).getText('UTF-8')
+                samplesheet_content_ch = Channel.of(samplesheet)
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_snp, row.vcf_tbi_snp, row.bam, row.bai, row.bas, row.met, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_SNP(sample_paths_content_ch, vcfilter_config)
+                FILTER_WITH_MATCH_NORMAL_SNP(samplesheet_content_ch, vcfilter_config)
             }
         }
 
@@ -78,17 +73,17 @@ workflow {
         if (params.filter_indel == true) {
             vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/indel_default.filter" : params.vcfilter_config
             if (params.conpair == true) {
-                sample_paths_content_ch = CONPAIR_FILTER_WITH_MATCH_NORMAL.out
+                samplesheet_content_ch = CONPAIR_FILTER_WITH_MATCH_NORMAL.out
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_indel, row.bam, row.bai, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_INDEL(sample_paths_content_ch, vcfilter_config)
+                FILTER_WITH_MATCH_NORMAL_INDEL(samplesheet_content_ch, vcfilter_config)
             }
             else {
-                sample_paths = new File(params.sample_paths).getText('UTF-8')
-                sample_paths_content_ch = Channel.of(sample_paths)
+                samplesheet = new File(params.samplesheet).getText('UTF-8')
+                samplesheet_content_ch = Channel.of(samplesheet)
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_indel, row.bam, row.bai, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_INDEL(sample_paths_content_ch, vcfilter_config)
+                FILTER_WITH_MATCH_NORMAL_INDEL(samplesheet_content_ch, vcfilter_config)
             }
         }
         
@@ -114,8 +109,8 @@ workflow {
         }
         else if (params.filter_indel == true) {
             // get topology
-            sample_paths = new File(params.sample_paths).getText('UTF-8')
-            topology = Channel.of(sample_paths)
+            samplesheet = new File(params.samplesheet).getText('UTF-8')
+            topology = Channel.of(samplesheet)
                 .splitCsv( header: true, sep : '\t' )
                 .map { row -> tuple( row.pdid, row.topology ) }
                 .unique()
@@ -132,10 +127,10 @@ workflow {
         else { // phylogenetics pipeline only 
             assert params.with_topology != null 
             if (params.with_topology == true) {
-                // process input sample_paths
+                // process input samplesheet
                 outdir_basename = (params.phylogenetics_outdir_basename == "") ? 'phylogenetics_indel_out' : params.phylogenetics_outdir_basename
-                sample_paths = new File(params.sample_paths).getText('UTF-8')
-                sample_path_content = Channel.of(sample_paths)
+                samplesheet = new File(params.samplesheet).getText('UTF-8')
+                sample_path_content = Channel.of(samplesheet)
                     .splitCsv( header: true, sep : '\t' )
                     .map{ row -> tuple( row.pdid, row.topology, row.nr_path, row.nv_path, row.genotype_bin_path ) }
                 PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY(sample_path_content, outdir_basename)
@@ -143,8 +138,8 @@ workflow {
             else {
                 // process input sample paths 
                 outdir_basename = (params.phylogenetics_outdir_basename == "") ? 'phylogenetics_snp_out' : params.phylogenetics_outdir_basename
-                sample_paths = new File(params.sample_paths).getText('UTF-8')
-                sample_path_content = Channel.of(sample_paths)
+                samplesheet = new File(params.samplesheet).getText('UTF-8')
+                sample_path_content = Channel.of(samplesheet)
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.pdid, row.nr_path, row.nv_path, row.genotype_bin_path ) }
                 PHYLOGENETICS(sample_path_content, outdir_basename)

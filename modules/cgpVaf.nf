@@ -6,7 +6,7 @@ process cgpVaf {
     tuple val(pdid), val(sample_id_ls), val(match_normal_id_ls), path(vcf_ls), path(tbi_ls), path(bam_ls), path(bai_ls), path(bam_match_ls, stageAs: 'bam_match*.bam'), path(bai_match_ls, stageAs: 'bam_match*.bam.bai')
     val mut_type
     // path reference_genome // use abolute path in cmd below as cgpVaf can only take absolute values // keeping this in case cgpVaf module changes such that absolute path is no longer required
-    // path high_depth_region 
+    // path high_depth_bed 
 
     output:
     tuple val(pdid), val(sample_id_ls), val(match_normal_id), path("${pdid}_${mut_type}_vaf.tsv", arity: '1')
@@ -35,7 +35,7 @@ process cgpVaf {
 
     // creating cgpVaf command
     samples = sample_id_ls.join(" ")
-    cmd="cgpVaf.pl -d . -o . -a  ${mut_type} -g  ${params.reference_genome} -hdr  ${params.high_depth_region} --vcf  ${vcf} --normal_bam ${bam_match} --tumour_bam ${bam} --normal_name ${match_normal_id} --tumour_name ${samples} -ct 1" // params.reference_genome and params.high_depth_region because cgpVaf can only take absolute path
+    cmd="cgpVaf.pl -d . -o . -a  ${mut_type} -g  ${params.reference_genome} -hdr  ${params.high_depth_bed} --vcf  ${vcf} --normal_bam ${bam_match} --tumour_bam ${bam} --normal_name ${match_normal_id} --tumour_name ${samples} -ct 1" // params.reference_genome and params.high_depth_bed because cgpVaf can only take absolute path
     
 
     """

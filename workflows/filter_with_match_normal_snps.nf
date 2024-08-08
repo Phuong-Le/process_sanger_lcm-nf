@@ -24,7 +24,7 @@ workflow FILTER_WITH_MATCH_NORMAL_SNP {
 
     // // cgpVaf 
     cgpVaf(vcfiltered_ch.groupTuple( by: 0 ), mut_type)
-    // cgpVaf_out_ch = cgpVaf(cgpvaf_input_ch, params.mut_type, params.reference_genome, params.high_depth_region) // keeping this in case cgpVaf module changes such that absolute path is no longer required
+    // cgpVaf_out_ch = cgpVaf(cgpvaf_input_ch, params.mut_type, params.reference_genome, params.high_depth_bed) // keeping this in case cgpVaf module changes such that absolute path is no longer required
 
 
     // BetaBinomial filtering for germline and LCM artefacts based on cgpVaf (methods by Tim Coorens)

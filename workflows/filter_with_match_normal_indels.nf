@@ -9,7 +9,7 @@ include { sigprofilerPlotSnpBySamples } from "$projectDir/modules/sigprofilerPlo
 
 workflow FILTER_WITH_MATCH_NORMAL_INDEL {
     take:
-    sample_paths_content_ch
+    samplesheet_content_ch
     vcfilter_config
 
     main:
@@ -19,12 +19,12 @@ workflow FILTER_WITH_MATCH_NORMAL_INDEL {
     // TIM BUTLER REFLAG GOES HERE
 
     // FILTER
-    vcfiltered_ch = pindelFilter(sample_paths_content_ch, vcfilter_config, mut_type)
+    vcfiltered_ch = pindelFilter(samplesheet_content_ch, vcfilter_config, mut_type)
 
 
     // cgpVaf 
     cgpVaf_out_ch = cgpVaf(vcfiltered_ch.groupTuple( by: 0 ), mut_type)
-    // cgpVaf_out_ch = cgpVaf(cgpvaf_input_ch, params.mut_type, params.reference_genome, params.high_depth_region) // keeping this in case cgpVaf module changes such that absolute path is no longer required
+    // cgpVaf_out_ch = cgpVaf(cgpvaf_input_ch, params.mut_type, params.reference_genome, params.high_depth_bed) // keeping this in case cgpVaf module changes such that absolute path is no longer required
 
     // BetaBinomial filtering for germline and LCM artefacts based on cgpVaf (methods by Tim Coorens)
     (beta_binom_index_ch, germline, somatic, rho, phylogenetics_input_ch) = betaBinomFilterIndex(cgpVaf.out, mut_type) // get the indices for the filtering 
