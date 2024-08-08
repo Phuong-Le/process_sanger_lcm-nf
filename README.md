@@ -4,6 +4,8 @@
 
 `process_sanger_lcm-nf` is a [Nextflow](https://www.nextflow.io/) pipeline to process low-input DNA sequencing data, either from laser capture microdissection or from single-cell derived colonies. It takes as input variant calls in the form of VCF files from `CaVEMAN` (SNVs) or `Pindel` (indels).
 
+Broadly, the pipeline's steps are as follows:
+
 1. Filtering based on CaVeMan or Pindels. Default filtering criteria can be found in either [data/indel_default.filter](https://github.com/Phuong-Le/process_sanger_lcm-nf/blob/main/data/indel_default.filter) or [data/snv_default.filter](https://github.com/Phuong-Le/process_sanger_lcm-nf/blob/main/data/snv_default.filter).
 2. For each donor with multiple samples, use `cgpVAF` to calculate VAF across their samples.
 3. Use beta-binomial test based on VAF to filter out germline and LCM artefact mutations.
@@ -36,7 +38,7 @@ git clone --recursive git@github.com:Phuong-Le/process_sanger_lcm-nf.git
 
 ### samplesheet.csv
 
-First, prepare a samplesheet with your input data. Demo samplesheets for SNVs and indels can be found in the `demo_files/` directory. The samplesheet must can be either in CSV or TSV format. It must include the columns `sample_id`, `match_normal_id`, `pdid`, `bam`, `bai`, `bam_match `, and `bai_match`.
+First, prepare a samplesheet with your input data. Demo samplesheets for SNVs and indels can be found in the `demo_files/` directory. The samplesheet can be in either CSV or TSV format. It must include the columns `sample_id`, `match_normal_id`, `pdid`, `bam`, `bai`, `bam_match `, and `bai_match`.
 
 ##### Indels
 
@@ -60,7 +62,7 @@ For SNVs, it must include the additional columns `vcf_snv`, `vcf_tbi_snv`, `bas`
 
 Each row represents one sample to be run through the pipeline.
 
-N.B. Sample IDs should be unique. VCF files must gzipped, with the extension `*.vcf.gz`. Additionally, due to `cgpVAF` requirements, the BAM files (`bam`, `bam_match`) should be in the form `<sample_id>.bam `and BAI files (`bai`, `bai_match`) in the form `<sample_id>.bam.bai`. These constraints may be lifted soon (see **Future work**).
+**N.B.** Sample IDs should be unique. VCF files must gzipped, with the extension `*.vcf.gz`. Additionally, due to `cgpVAF` requirements, the BAM files (`bam`, `bam_match`) should be in the form `<sample_id>.bam `and BAI files (`bai`, `bai_match`) in the form `<sample_id>.bam.bai`. These constraints may be lifted soon (see **Future work**).
 
 ### Running the pipeline
 
@@ -107,7 +109,7 @@ bsub \
 
 ```
 
-N.B. This pipeline (particularly the sanger_lsf.config) has only be tested on non-malignant colon data (~2,000-9,000 mutations per sample). If you have a bigger dataset, it might be neccessary to experiment with different memory settings.
+**N.B.** This pipeline (particularly the configuration in `conf/sanger_lsf.config`) has only be tested on non-malignant colon data (~2,000-9,000 mutations per sample). If you have a bigger dataset, you may need to experiment with different resource allocation settings.
 
 ### All parameters
 
@@ -181,6 +183,7 @@ Chuling Ding (cd23@sanger.ac.uk)
 
 * [ ] Improve cgpVAF runtime by parallelising computation by chromosome and/or batches of samples.
 * [ ] Resolve the constraints on the file names in the input (see N.B. in `samplesheet.csv` section).
+* [ ] Complete parameter descriptions and interactions in `nextflow_schema.json`.
 * [ ] Update hairpin to hairpin2.
 * [ ] Containerise all steps so that the pipeline will run off-farm.
 * [ ] Add VCF reflagging.
