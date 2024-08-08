@@ -32,10 +32,13 @@ process cgpVaf {
         indexA <=> indexB
     } 
     bam = bam_ls.join(" ")
+    
+    // define mutation type
+    def variant_type = (mut_type == "snv") ? "snp" : (mut_type == "indel") ? "indel" : ""
 
     // creating cgpVaf command
     samples = sample_id_ls.join(" ")
-    cmd="cgpVaf.pl -d . -o . -a  ${mut_type} -g  ${params.reference_genome} -hdr  ${params.high_depth_bed} --vcf  ${vcf} --normal_bam ${bam_match} --tumour_bam ${bam} --normal_name ${match_normal_id} --tumour_name ${samples} -ct 1" // params.reference_genome and params.high_depth_bed because cgpVaf can only take absolute path
+    cmd="cgpVaf.pl -d . -o . -a  ${variant_type} -g  ${params.reference_genome} -hdr  ${params.high_depth_bed} --vcf  ${vcf} --normal_bam ${bam_match} --tumour_bam ${bam} --normal_name ${match_normal_id} --tumour_name ${samples} -ct 1" // params.reference_genome and params.high_depth_bed because cgpVaf can only take absolute path
     
 
     """
