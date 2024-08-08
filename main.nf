@@ -1,10 +1,12 @@
 #!/usr/bin/env nextflow 
 
-// Enable DSL 2
+// enable DSL 2
 nextflow.enable.dsl=2
 
-// import processes for main workflow
-include { validate } from "$projectDir/modules/validate.nf"
+// all of the default parameters are set in `nextflow.config`
+
+// include functions
+include { validateParameters; paramsHelp; samplesheetToList } from 'plugin/nf-schema'
 
 // include different workflow options
 include { CONPAIR_FILTER_WITH_MATCH_NORMAL } from "$projectDir/workflows/conpair_filter_with_match_normal.nf"
@@ -13,8 +15,6 @@ include { FILTER_WITH_MATCH_NORMAL_INDEL } from "$projectDir/workflows/filter_wi
 include { PHYLOGENETICS } from "$projectDir/workflows/phylogenetics.nf"
 include { PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY } from "$projectDir/workflows/phylogenetics_provided_topology.nf"
 
-// validate parameters
-validate(params)
 // download container images
 include { singularityPreflight } from "$projectDir/modules/singularity"
 // If Singularity is used as the container engine and not showing help message, do preflight check to prevent parallel pull issues
@@ -23,10 +23,32 @@ if (workflow.containerEngine == 'singularity') {
     singularityPreflight(workflow.container, params.singularity_cachedir)
 }
 
+// // print help message, with typical command line usage
+// if (params.help) {
+//   def String command = """nextflow run process_sanger_lcm-nf \\
+//     --sample_paths /path/to/sample_sheet.csv \\
+//     --mut_type snv \\
+//     --reference_genome /path/to/genome.fa \\
+//     --high_depth_bed /path/to/HiDepth.bed.gz \\
+//     --outdir out/""".stripIndent()
+//   log.info paramsHelp("nextflow run process_sanger_lcm-nf")
+//   exit 0
+// }
+// print help message, return typical command line usage for the pipeline
+if (params.help) {
+  log.info paramsHelp("nextflow run low_input_trees --sample_sheet sample_sheet.csv --sequencing_type WGS --outdir out/")
+  exit 0
+}
+
+// validate input parameters
+if (params.validate_params) {
+  validateParameters()
+}
 
 workflow {
-    // String sample_paths = new File(params.sample_paths).getText('UTF-8')
     
+    System.exit(0)
+
     if (params.with_match_normal == true) {
 
         // conpair 

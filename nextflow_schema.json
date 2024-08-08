@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/nf-core/process_sanger_lcm-nf/master/nextflow_schema.json",
+  "title": "process_sanger_lcm-nf pipeline parameters",
+  "description": "Pipeline for filtering LCM artifacts and germline mutations post LCMB. Contact Phuong at al35@sanger.ac.uk.",
+  "type": "object",
+  "defs": {
+    "input_output_options": {
+      "title": "Input/output options",
+      "type": "object",
+      "fa_icon": "fas fa-terminal",
+      "description": "Define where the pipeline should find input data and save output data.",
+      "required": ["sample_paths", "reference_genome", "outdir"],
+      "properties": {
+        "sample_paths": {
+          "type": "string",
+          "description": "A file that contains paths to relevant files for the processes in the pipeline, with headers similar to demo_files/lcm_processing_input_indel.tsv for Indels or demo_files/lcm_processing_input_snv.tsv for SNVs."
+        },
+        "mut_type": {
+          "type": "string",
+          "default": "snv",
+          "description": "The type of mutation in the input files.",
+          "enum": ["snv", "indel"]
+        },
+        "reference_genome": {
+          "type": "string",
+          "description": "Path to the reference genome fasta file."
+        },
+        "with_match_normal": {
+          "type": "boolean",
+          "default": true
+        },
+        "outdir": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+          "fa_icon": "fas fa-folder-open"
+        },
+        "help": {
+          "type": "boolean",
+          "description": "Return pipeline options and example command."
+        }
+      }
+    },
+    "conpair_options": {
+      "title": "Conpair options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "conpair": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run Conpair?"
+        },
+        "marker_bed": {
+          "type": "string"
+        },
+        "marker_txt": {
+          "type": "string"
+        },
+        "concordance_threshold": {
+          "type": "integer",
+          "default": 90
+        },
+        "contamination_threshold_samples": {
+          "type": "number",
+          "default": 0.3
+        },
+        "contamination_threshold_match": {
+          "type": "integer",
+          "default": 5
+        }
+      }
+    },
+    "snv_filtering_options": {
+      "title": "SNV filtering options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "filter_snv": {
+          "type": "boolean",
+          "default": true,
+          "description": "Filter SNVs?"
+        }
+      }
+    },
+    "indel_filtering_options": {
+      "title": "Indel filtering options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "filter_indel": {
+          "type": "boolean",
+          "default": true,
+          "description": "Filter indels?"
+        }
+      }
+    },
+    "vcfilter_options": {
+      "title": "vcfilter options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "vcfilter_config": {
+          "type": "string",
+          "description": "Pre-cgpVAF filtering. Defaults to data/indel_default.filter for Indels and data/snv_default.filter for SNVs."
+        }
+      }
+    },
+    "cgpvaf_options": {
+      "title": "cgpVAF options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "high_depth_bed": {
+          "type": "string",
+          "description": "Path to a reference BED file of high depth regions."
+        }
+      }
+    },
+    "phylogenetics_options": {
+      "title": "Phylogenetics options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "phylogenetics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Build a phylogenetic tree from the mutations?"
+        },
+        "with_topology": {
+          "type": "string"
+        },
+        "phylogenetics_outdir_basename": {
+          "type": "string"
+        }
+      }
+    },
+    "schema_validation_default_options": {
+      "title": "Schema validation default options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "validate_params": {
+          "type": "boolean",
+          "default": true,
+          "hidden": true
+        },
+        "validationFailUnrecognisedParams": {
+          "type": "boolean",
+          "hidden": true
+        },
+        "validationLenientMode": {
+          "type": "boolean",
+          "hidden": true
+        },
+        "validationShowHiddenParams": {
+          "type": "boolean",
+          "hidden": true
+        },
+        "validationS3PathCheck": {
+          "type": "boolean",
+          "hidden": true
+        },
+        "validationSkipDuplicateCheck": {
+          "type": "boolean",
+          "hidden": true
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/defs/input_output_options"
+    },
+    {
+      "$ref": "#/defs/conpair_options"
+    },
+    {
+      "$ref": "#/defs/snv_filtering_options"
+    },
+    {
+      "$ref": "#/defs/indel_filtering_options"
+    },
+    {
+      "$ref": "#/defs/vcfilter_options"
+    },
+    {
+      "$ref": "#/defs/cgpvaf_options"
+    },
+    {
+      "$ref": "#/defs/phylogenetics_options"
+    },
+    {
+      "$ref": "#/defs/schema_validation_default_options"
+    }
+  ]
+}
