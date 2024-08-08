@@ -36,17 +36,31 @@ git clone --recursive git@github.com:Phuong-Le/process_sanger_lcm-nf.git
 
 ### samplesheet.csv
 
-First, prepare a samplesheet with your input data. Demo samplesheets for SNVs and indels can be found in the `demo_files/` directory. The samplesheet must be in CSV format and should look as follow:
+First, prepare a samplesheet with your input data. Demo samplesheets for SNVs and indels can be found in the `demo_files/` directory. The samplesheet must can be either in CSV or TSV format. It must include the columns `sample_id`, `match_normal_id`, `pdid`, `bam`, `bai`, `bam_match `, and `bai_match`.
 
-| sample_id       | match_normal_id | pdid    | bam_match                    | bai_match                        | vcf                                                 | vcf_tbi                                                 | bam                                 | bai                                     |
+##### Indels
+
+ For indels, it must include the additional columns `vcf_indel` and `vcf_tbi_indel`. It should look something like this:
+
+| sample_id       | match_normal_id | pdid    | bam_match                    | bai_match                        | vcf_indel                                           | vcf_tbi_indel                                           | bam                                 | bai                                     |
 | --------------- | --------------- | ------- | ---------------------------- | -------------------------------- | --------------------------------------------------- | ------------------------------------------------------- | ----------------------------------- | --------------------------------------- |
 | PD47151n_lo0002 | PD47151b        | PD47151 | path/to/PD47151/PD47151b.bam | path/to/PD47151/PD47151b.bam.bai | path/to/PD47151/PD47151n_lo0002.pindel.annot.vcf.gz | path/to/PD47151/PD47151n_lo0002.pindel.annot.vcf.gz.tbi | path/to/PD47151/PD47151n_lo0002.bam | path/to/PD47151/PD47151n_lo0002.bam.bai |
 | PD47151n_lo0004 | PD47151b        | PD47151 | path/to/PD47151/PD47151b.bam | path/to/PD47151/PD47151b.bam.bai | path/to/PD47151/PD47151n_lo0004.pindel.annot.vcf.gz | path/to/PD47151/PD47151n_lo0004.pindel.annot.vcf.gz.tbi | path/to/PD47151/PD47151n_lo0004.bam | path/to/PD47151/PD47151n_lo0004.bam.bai |
 | PD52103n_lo0002 | PD52103b        | PD52103 | path/to/PD52103/PD52103b.bam | path/to/PD52103/PD52103b.bam.bai | path/to/PD52103/PD52103n_lo0002.pindel.annot.vcf.gz | path/to/PD52103/PD52103n_lo0002.pindel.annot.vcf.gz.tbi | path/to/PD52103/PD52103n_lo0002.bam | path/to/PD52103/PD52103n_lo0002.bam.bai |
 
-Each row represents one sample. Sample IDs should be unique.
+##### SNVs
 
-N.B. VCF files must gzipped, with the extension `*.vcf.gz`. Additionally, due to `cgpVAF` requirements, the BAM files (`bam`, `bam_match`) should be in the form `<sample_id>.bam `and BAI files (`bai`, `bai_match`) in the form `<sample_id>.bam.bai`. These constraints may be lifted soon (see **Future work**).
+For SNVs, it must include the additional columns `vcf_snv`, `vcf_tbi_snv`, `bas`, and `met`. It should look something like this:
+
+| sample_id       | match_normal_id | pdid    | bam_match                    | bai_match                        | vcf_snv                                                | vcf_tbi_snv                                                | bam                                 | bai                                     | bas                                     | met                                        |
+| --------------- | --------------- | ------- | ---------------------------- | -------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------- | ----------------------------------- | --------------------------------------- | --------------------------------------- | ------------------------------------------ |
+| PD47151n_lo0002 | PD47151b        | PD47151 | path/to/PD47151/PD47151b.bam | path/to/PD47151/PD47151b.bam.bai | path/to/PD47151/PD47151n_lo0002.caveman_c.annot.vcf.gz | path/to/PD47151/PD47151n_lo0002.caveman_c.annot.vcf.gz.tbi | path/to/PD47151/PD47151n_lo0002.bam | path/to/PD47151/PD47151n_lo0002.bam.bai | path/to/PD47151/PD47151n_lo0002.bam.bas | path/to/PD47151/PD47151n_lo0002.bam.met.gz |
+| PD47151n_lo0004 | PD47151b        | PD47151 | path/to/PD47151/PD47151b.bam | path/to/PD47151/PD47151b.bam.bai | path/to/PD47151/PD47151n_lo0004.caveman_c.annot.vcf.gz | path/to/PD47151/PD47151n_lo0004.caveman_c.annot.vcf.gz.tbi | path/to/PD47151/PD47151n_lo0004.bam | path/to/PD47151/PD47151n_lo0004.bam.bai | path/to/PD47151/PD47151n_lo0004.bam.bas | path/to/PD47151/PD47151n_lo0004.bam.met.gz |
+| PD52103n_lo0002 | PD52103b        | PD52103 | path/to/PD52103/PD52103b.bam | path/to/PD52103/PD52103b.bam.bai | path/to/PD52103/PD52103n_lo0002.caveman_c.annot.vcf.gz | path/to/PD52103/PD52103n_lo0002.caveman_c.annot.vcf.gz.tbi | path/to/PD52103/PD52103n_lo0002.bam | path/to/PD52103/PD52103n_lo0002.bam.bai | path/to/PD52103/PD52103n_lo0002.bam.bas | path/to/PD52103/PD52103n_lo0002.bam.met.gz |
+
+Each row represents one sample to be run through the pipeline.
+
+N.B. Sample IDs should be unique. VCF files must gzipped, with the extension `*.vcf.gz`. Additionally, due to `cgpVAF` requirements, the BAM files (`bam`, `bam_match`) should be in the form `<sample_id>.bam `and BAI files (`bai`, `bai_match`) in the form `<sample_id>.bam.bai`. These constraints may be lifted soon (see **Future work**).
 
 ### Running the pipeline
 

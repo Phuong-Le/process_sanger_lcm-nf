@@ -33,7 +33,7 @@ process cgpVaf {
     } 
     bam = bam_ls.join(" ")
     
-    // define mutation type
+    // define mutation type to match cgpVaf requirement (takes indel or snp)
     def variant_type = (mut_type == "snv") ? "snp" : (mut_type == "indel") ? "indel" : ""
 
     // creating cgpVaf command
