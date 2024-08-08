@@ -109,7 +109,7 @@ Launching `./main.nf` [boring_lumiere] DSL2 - revision: 91dc7941f3
 Typical pipeline command:
 
   nextflow run process_sanger_lcm-nf \
-    --samplesheet /path/to/sample_sheet.csv \
+    --samplesheet /path/to/samplesheet.csv \
     --mut_type snv \
     --reference_genome /path/to/genome.fa \
     --high_depth_bed /path/to/HiDepth.bed.gz \

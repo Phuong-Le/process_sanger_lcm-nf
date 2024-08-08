@@ -6,7 +6,7 @@ nextflow.enable.dsl=2
 // all of the default parameters are set in `nextflow.config`
 
 // include functions
-include { validateParameters; paramsHelp; samplesheetToList } from 'plugin/nf-schema'
+include { validateParameters; paramsHelp; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
 
 // include different workflow options
 include { CONPAIR_FILTER_WITH_MATCH_NORMAL } from "$projectDir/workflows/conpair_filter_with_match_normal.nf"
@@ -26,7 +26,7 @@ if (workflow.containerEngine == 'singularity') {
 // print help message, with typical command line usage
 if (params.help) {
   def String command = """nextflow run process_sanger_lcm-nf \\
-    --samplesheet /path/to/sample_sheet.csv \\
+    --samplesheet /path/to/samplesheet.csv \\
     --mut_type snv \\
     --reference_genome /path/to/genome.fa \\
     --high_depth_bed /path/to/HiDepth.bed.gz \\
@@ -35,14 +35,24 @@ if (params.help) {
   exit 0
 }
 
-// validate input parameters
+// validate parameters
 if (params.validate_params) {
   validateParameters()
 }
 
 workflow {
     
-    System.exit(0)
+    // print summary of supplied parameters
+    log.info paramsSummaryLog(workflow)
+
+    // generate a channel of samples
+    Channel.fromList(samplesheetToList(params.samplesheet, "./assets/schema_samplesheet.json"))
+    | map { meta, bam_match, bai_match, bas_match, vcf, vcf_tbi, bam, bai, bas, met -> 
+            [meta, file(bam_match)] }
+    | set { ch_samples }
+
+    // TODO: implement new channel architecture throughout pipeline
+    exit 0
 
     if (params.with_match_normal == true) {
 
