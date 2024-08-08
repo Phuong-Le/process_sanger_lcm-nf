@@ -1,4 +1,4 @@
-process sigprofilerPlotSnpBySamples {
+process sigprofilerPlotSnvBySamples {
     publishDir "${params.outdir}/filter_${mut_type}_out", overwrite: false
 
     input:

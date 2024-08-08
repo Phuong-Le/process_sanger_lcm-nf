@@ -1,4 +1,4 @@
-process sigprofilerPlotSnpByBranches {
+process sigprofilerPlotSnvByBranches {
     publishDir "${params.outdir}/${outdir_basename}", overwrite: false
 
     input:

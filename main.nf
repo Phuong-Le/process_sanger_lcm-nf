@@ -10,7 +10,7 @@ include { validateParameters; paramsHelp; samplesheetToList } from 'plugin/nf-sc
 
 // include different workflow options
 include { CONPAIR_FILTER_WITH_MATCH_NORMAL } from "$projectDir/workflows/conpair_filter_with_match_normal.nf"
-include { FILTER_WITH_MATCH_NORMAL_SNP } from "$projectDir/workflows/filter_with_match_normal_snps.nf"
+include { FILTER_WITH_MATCH_NORMAL_SNV } from "$projectDir/workflows/filter_with_match_normal_snvs.nf"
 include { FILTER_WITH_MATCH_NORMAL_INDEL } from "$projectDir/workflows/filter_with_match_normal_indels.nf"
 include { PHYLOGENETICS } from "$projectDir/workflows/phylogenetics.nf"
 include { PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY } from "$projectDir/workflows/phylogenetics_provided_topology.nf"
@@ -51,21 +51,21 @@ workflow {
             CONPAIR_FILTER_WITH_MATCH_NORMAL(params.samplesheet) 
         }
 
-        // filtering snps 
-        if (params.filter_snp == true) {
-            vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/snp_default.filter" : params.vcfilter_config
+        // filtering snvs 
+        if (params.filter_snv == true) {
+            vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/snv_default.filter" : params.vcfilter_config
             if (params.conpair == true) {
                 samplesheet_content_ch = CONPAIR_FILTER_WITH_MATCH_NORMAL.out
                     .splitCsv( header: true, sep : '\t' )
-                    .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_snp, row.vcf_tbi_snp, row.bam, row.bai, row.bas, row.met, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_SNP(samplesheet_content_ch, vcfilter_config)
+                    .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_snv, row.vcf_tbi_snv, row.bam, row.bai, row.bas, row.met, row.bam_match, row.bai_match ) }
+                FILTER_WITH_MATCH_NORMAL_SNV(samplesheet_content_ch, vcfilter_config)
             }
             else {
                 samplesheet = new File(params.samplesheet).getText('UTF-8')
                 samplesheet_content_ch = Channel.of(samplesheet)
                     .splitCsv( header: true, sep : '\t' )
-                    .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_snp, row.vcf_tbi_snp, row.bam, row.bai, row.bas, row.met, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_SNP(samplesheet_content_ch, vcfilter_config)
+                    .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_snv, row.vcf_tbi_snv, row.bam, row.bai, row.bas, row.met, row.bam_match, row.bai_match ) }
+                FILTER_WITH_MATCH_NORMAL_SNV(samplesheet_content_ch, vcfilter_config)
             }
         }
 
@@ -90,14 +90,14 @@ workflow {
     }
 
     // phylogenetics is independent of whether there's a match normal or not
-    // indel phylogenetics will use output from snp phylogenetics if both workflows are run
+    // indel phylogenetics will use output from snv phylogenetics if both workflows are run
     if (params.phylogenetics == true) {
-        if (params.filter_snp == true) {
+        if (params.filter_snv == true) {
             // only run this if there are more than 2 sample per donor (genotype_bin only has one column)
-            phylogenetics_input_ch = FILTER_WITH_MATCH_NORMAL_SNP
+            phylogenetics_input_ch = FILTER_WITH_MATCH_NORMAL_SNV
                 .out
                 .filter { it[3].readLines().first().split(' ').size() > 2 }
-            PHYLOGENETICS(phylogenetics_input_ch, 'phylogenetics_snp_out') // phylogenetics without tree topology
+            PHYLOGENETICS(phylogenetics_input_ch, 'phylogenetics_snv_out') // phylogenetics without tree topology
             if (params.filter_indel == true) {
                 phylogenetics_input_ch = FILTER_WITH_MATCH_NORMAL_INDEL
                     .out
@@ -137,7 +137,7 @@ workflow {
             }
             else {
                 // process input sample paths 
-                outdir_basename = (params.phylogenetics_outdir_basename == "") ? 'phylogenetics_snp_out' : params.phylogenetics_outdir_basename
+                outdir_basename = (params.phylogenetics_outdir_basename == "") ? 'phylogenetics_snv_out' : params.phylogenetics_outdir_basename
                 samplesheet = new File(params.samplesheet).getText('UTF-8')
                 sample_path_content = Channel.of(samplesheet)
                     .splitCsv( header: true, sep : '\t' )

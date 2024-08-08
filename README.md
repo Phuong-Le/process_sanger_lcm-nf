@@ -7,7 +7,7 @@
 1. Filtering based on CaVeMan or Pindels. Default filtering criteria can be found in either [data/indel_default.filter](https://github.com/Phuong-Le/process_sanger_lcm-nf/blob/main/data/indel_default.filter) or [data/snv_default.filter](https://github.com/Phuong-Le/process_sanger_lcm-nf/blob/main/data/snv_default.filter).
 2. For each donor with multiple samples, use `cgpVAF` to calculate VAF across their samples.
 3. Use beta-binomial test based on VAF to filter out germline and LCM artefact mutations.
-4. Generate mutation matrix (only implemented for snps at the moment, will add this feature for indels).
+4. Generate mutation matrix (only implemented for SNVs at the moment, will add this feature for indels).
 5. Build a phylogenetic clone tree based on all filtered mutations.
 
 This pipeline is still in active development. The full set of features that we *hope* to implement is illustrated below.

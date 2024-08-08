@@ -1,4 +1,0 @@
-sample_id	match_normal_id	pdid	data_dir	bam_match	bai_match	vcf	vcf_tbi	bam	bai
-PD47151n_lo0002	PD47151b	PD47151	path/to/PD47151	path/to/PD47151/PD47151b.bam	path/to/PD47151/PD47151b.bam.bai	path/to/PD47151/PD47151n_lo0002.pindel.annot.vcf.gz	path/to/PD47151/PD47151n_lo0002.pindel.annot.vcf.gz.tbi	path/to/PD47151/PD47151n_lo0002.bam	path/to/PD47151/PD47151n_lo0002.bam.bai
-PD47151n_lo0004	PD47151b	PD47151	path/to/PD47151	path/to/PD47151/PD47151b.bam	path/to/PD47151/PD47151b.bam.bai	path/to/PD47151/PD47151n_lo0004.pindel.annot.vcf.gz	path/to/PD47151/PD47151n_lo0004.pindel.annot.vcf.gz.tbi	path/to/PD47151/PD47151n_lo0004.bam	path/to/PD47151/PD47151n_lo0004.bam.bai
-PD52103n_lo0002	PD52103b	PD52103	path/to/PD52103	path/to/PD52103/PD52103b.bam	path/to/PD52103/PD52103b.bam.bai	path/to/PD52103/PD52103n_lo0002.pindel.annot.vcf.gz	path/to/PD52103/PD52103n_lo0002.pindel.annot.vcf.gz.tbi	path/to/PD52103/PD52103n_lo0002.bam	path/to/PD52103/PD52103n_lo0002.bam.bai

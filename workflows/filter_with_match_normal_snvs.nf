@@ -4,21 +4,21 @@ include { cgpVaf } from "$projectDir/modules/cgpVaf.nf"
 include { betaBinomFilterIndex } from "$projectDir/modules/betaBinomFilterIndex.nf"
 include { betaBinomFilter } from "$projectDir/modules/betaBinomFilter.nf"
 include { matrixGeneratorOnSamples } from "$projectDir/modules/matrixGeneratorOnSamples.nf"
-include { sigprofilerPlotSnpBySamples } from "$projectDir/modules/sigprofilerPlotSnpBySamples.nf"
+include { sigprofilerPlotSnvBySamples } from "$projectDir/modules/sigprofilerPlotSnvBySamples.nf"
 
 
 
 
-workflow FILTER_WITH_MATCH_NORMAL_SNP {
+workflow FILTER_WITH_MATCH_NORMAL_SNV {
     take:
     sample_path_content
     vcfilter_config
 
     main:
     // setup
-    mut_type = 'snp'
+    mut_type = 'snv'
     
-    // Hairpin filtering for SNPs 
+    // Hairpin filtering for SNVs 
     vcfiltered_ch = hairpinFilter(sample_path_content, vcfilter_config)
 
 
@@ -42,7 +42,7 @@ workflow FILTER_WITH_MATCH_NORMAL_SNP {
     matrixGeneratorOnSamples(betaBinomFilter.out.toList(), mut_type)
 
     // plot spectra
-    sigprofilerPlotSnpBySamples(matrixGeneratorOnSamples.out, mut_type)
+    sigprofilerPlotSnvBySamples(matrixGeneratorOnSamples.out, mut_type)
 
     emit:
     phylogenetics_input_ch

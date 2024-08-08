@@ -5,7 +5,7 @@
 validParams = [
     with_match_normal: 'boolean',
     conpair: 'boolean',
-    filter_snp: 'boolean',
+    filter_snv: 'boolean',
     filter_indel: 'boolean',
     phylogenetics: 'boolean',
     singularity_cachedir: 'path',
@@ -107,8 +107,8 @@ void validate(Map params) {
     }
 }
 
-// mut_type can only be "snp" or "indel"
-// if ( ! ["snp", "indel"].contains(params.mut_type) ) {
-//     log.error("mut_type can only be either snp or indel")
+// mut_type can only be "snv" or "indel"
+// if ( ! ["snv", "indel"].contains(params.mut_type) ) {
+//     log.error("mut_type can only be either snv or indel")
 //     System.exit(2)
 // }
