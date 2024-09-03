@@ -16,6 +16,6 @@ workflow PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY { // phylogenetics workflow for IN
     matrixGeneratorOnBranches(branched_vcf_with_header, outdir_basename)
     concatMatrices(matrixGeneratorOnBranches.out.toList(), outdir_basename)
     // plotting
-    sigprofilerPlotSnpByBranches(concatMatrices.out, outdir_basename)
+    // sigprofilerPlotSnpByBranches(concatMatrices.out, outdir_basename)
 
 }

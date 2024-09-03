@@ -69,65 +69,64 @@ workflow {
                 FILTER_WITH_MATCH_NORMAL_INDEL(sample_paths_content_ch, vcfilter_config)
             }
         }
-        
-    }
 
-    // phylogenetics is independent of whether there's a match normal or not
-    // indel phylogenetics will use output from snp phylogenetics if both workflows are run
-    if (params.phylogenetics == true) {
-        if (params.filter_snp == true) {
-            // only run this if there are more than 2 sample per donor (genotype_bin only has one column)
-            phylogenetics_input_ch = FILTER_WITH_MATCH_NORMAL_SNP
-                .out
-                .filter { it[3].readLines().first().split(' ').size() > 2 }
-            PHYLOGENETICS(phylogenetics_input_ch, 'phylogenetics_snp_out') // phylogenetics without tree topology
-            if (params.filter_indel == true) {
+        // Phylogenetics
+        if (params.phylogenetics == true) {
+            if (params.filter_snp == true) {
+                // only run this if there are more than 2 sample per donor (genotype_bin only has one column)
+                phylogenetics_input_ch = FILTER_WITH_MATCH_NORMAL_SNP
+                    .out
+                    .filter { it[3].readLines().first().split(' ').size() > 2 }
+                PHYLOGENETICS(phylogenetics_input_ch, 'phylogenetics_snp_out') // phylogenetics without tree topology
+                if (params.filter_indel == true) {
+                    phylogenetics_input_ch = FILTER_WITH_MATCH_NORMAL_INDEL
+                        .out
+                        .filter { it[3].readLines().first().split(' ').size() > 2 }
+                    mutToTree_input_ch = PHYLOGENETICS.out.cross(phylogenetics_input_ch)
+                        .map( pdid -> tuple(pdid[0][0], pdid[0][1], pdid[1][1], pdid[1][2], pdid[1][3]) )
+                    PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY(mutToTree_input_ch, 'phylogenetics_indel_out')
+                }
+            }
+            else if (params.filter_indel == true) {
+                // get topology
+                sample_paths = new File(params.sample_paths).getText('UTF-8')
+                topology = Channel.of(sample_paths)
+                    .splitCsv( header: true, sep : '\t' )
+                    .map { row -> tuple( row.pdid, row.topology ) }
+                    .unique()
+            
                 phylogenetics_input_ch = FILTER_WITH_MATCH_NORMAL_INDEL
-                    .out
-                    .filter { it[3].readLines().first().split(' ').size() > 2 }
-                mutToTree_input_ch = PHYLOGENETICS.out.cross(phylogenetics_input_ch)
-                    .map( pdid -> tuple(pdid[0][0], pdid[0][1], pdid[1][1], pdid[1][2], pdid[1][3]) )
-                PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY(mutToTree_input_ch, 'phylogenetics_indel_out')
-            }
-        }
-        else if (params.filter_indel == true) {
-            // get topology
-            sample_paths = new File(params.sample_paths).getText('UTF-8')
-            topology = Channel.of(sample_paths)
-                .splitCsv( header: true, sep : '\t' )
-                .map { row -> tuple( row.pdid, row.topology ) }
-                .unique()
-        
-            phylogenetics_input_ch = FILTER_WITH_MATCH_NORMAL_INDEL
-                    .out
-                    .filter { it[3].readLines().first().split(' ').size() > 2 }
+                        .out
+                        .filter { it[3].readLines().first().split(' ').size() > 2 }
 
-            mutToTree_input_ch = topology.cross(phylogenetics_input_ch)
-                    .map( pdid -> tuple(pdid[0][0], pdid[0][1], pdid[1][1], pdid[1][2], pdid[1][3]) )
+                mutToTree_input_ch = topology.cross(phylogenetics_input_ch)
+                        .map( pdid -> tuple(pdid[0][0], pdid[0][1], pdid[1][1], pdid[1][2], pdid[1][3]) )
 
-            PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY(mutToTree_input_ch, 'phylogenetics_indel_out') // phylogenetics with tree topology
-        }
-        else { // phylogenetics pipeline only 
-            assert params.with_topology != null 
-            if (params.with_topology == true) {
-                // process input sample_paths
-                outdir_basename = (params.phylogenetics_outdir_basename == "") ? 'phylogenetics_indel_out' : params.phylogenetics_outdir_basename
-                sample_paths = new File(params.sample_paths).getText('UTF-8')
-                sample_path_content = Channel.of(sample_paths)
-                    .splitCsv( header: true, sep : '\t' )
-                    .map{ row -> tuple( row.pdid, row.topology, row.nr_path, row.nv_path, row.genotype_bin_path ) }
-                PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY(sample_path_content, outdir_basename)
+                PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY(mutToTree_input_ch, 'phylogenetics_indel_out') // phylogenetics with tree topology
             }
-            else {
-                // process input sample paths 
-                outdir_basename = (params.phylogenetics_outdir_basename == "") ? 'phylogenetics_snp_out' : params.phylogenetics_outdir_basename
-                sample_paths = new File(params.sample_paths).getText('UTF-8')
-                sample_path_content = Channel.of(sample_paths)
-                    .splitCsv( header: true, sep : '\t' )
-                    .map { row -> tuple( row.pdid, row.nr_path, row.nv_path, row.genotype_bin_path ) }
-                PHYLOGENETICS(sample_path_content, outdir_basename)
+            else { // phylogenetics pipeline only 
+                assert params.with_topology != null 
+                if (params.with_topology == true) {
+                    // process input sample_paths
+                    outdir_basename = (params.phylogenetics_outdir_basename == "") ? 'phylogenetics_indel_out' : params.phylogenetics_outdir_basename
+                    sample_paths = new File(params.sample_paths).getText('UTF-8')
+                    sample_path_content = Channel.of(sample_paths)
+                        .splitCsv( header: true, sep : '\t' )
+                        .map{ row -> tuple( row.pdid, row.topology, row.nr_path, row.nv_path, row.genotype_bin_path ) }
+                    PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY(sample_path_content, outdir_basename)
+                }
+                else {
+                    // process input sample paths 
+                    outdir_basename = (params.phylogenetics_outdir_basename == "") ? 'phylogenetics_snp_out' : params.phylogenetics_outdir_basename
+                    sample_paths = new File(params.sample_paths).getText('UTF-8')
+                    sample_path_content = Channel.of(sample_paths)
+                        .splitCsv( header: true, sep : '\t' )
+                        .map { row -> tuple( row.pdid, row.nr_path, row.nv_path, row.genotype_bin_path ) }
+                    PHYLOGENETICS(sample_path_content, outdir_basename)
+                }
             }
         }
+    
     }
        
 }

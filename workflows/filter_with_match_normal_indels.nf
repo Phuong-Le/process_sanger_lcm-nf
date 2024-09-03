@@ -15,8 +15,7 @@ workflow FILTER_WITH_MATCH_NORMAL_INDEL {
     main:
     // setup
     mut_type = 'indel'
-
-    // TIM BUTLER REFLAG GOES HERE
+    
 
     // FILTER
     vcfiltered_ch = pindelFilter(sample_paths_content_ch, vcfilter_config, mut_type)

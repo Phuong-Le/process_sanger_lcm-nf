@@ -16,7 +16,7 @@ workflow PHYLOGENETICS { // phylogenetics workflow for SNVs
     matrixGeneratorOnBranches(branched_vcf_with_header, outdir_basename)
     concatMatrices(matrixGeneratorOnBranches.out.toList(), outdir_basename)
     // plotting
-    sigprofilerPlotSnpByBranches(concatMatrices.out, outdir_basename)
+    // sigprofilerPlotSnpByBranches(concatMatrices.out, outdir_basename)
 
     emit:
     topology
