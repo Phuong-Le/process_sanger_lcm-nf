@@ -2,3 +2,5 @@
 .nextflow/
 test/
 .nextflow.log*
+singularity/
+__pycache__
