@@ -17,6 +17,8 @@ validParams = [
     marker_txt: 'path',
     vcfilter_config: '',
     reference_genome: 'path',
+    reference_genome_dict: 'path',
+    reference_genome_idx: 'path',
     high_depth_region: 'path',
     phylogenetics: 'boolean',
     with_topology: '',
