@@ -6,6 +6,7 @@ process betaBinomFilterIndex {
     input:
     tuple val(pdid), val(sample_id_ls), val(match_normal_id), path(vaf)
     val mut_type
+    val rho_threshold
 
     output:
     tuple val(pdid), path("*.bed")
@@ -16,7 +17,7 @@ process betaBinomFilterIndex {
 
     script:
     """
-    Rscript --vanilla ${projectDir}/bin/beta_binom_filter_index.R --libpath=${projectDir}/lib --cgpvaf_out=${vaf} --match_normal_id=${match_normal_id} --outdir=. 
+    Rscript --vanilla ${projectDir}/bin/beta_binom_filter_index.R --libpath=${projectDir}/lib --cgpvaf_out=${vaf} --match_normal_id=${match_normal_id} --rho_threshold=${rho_threshold} --outdir=. 
     """
 
 }

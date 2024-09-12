@@ -25,6 +25,7 @@ parsed_args <- parse_arguments(args)
 libpath = parsed_args$libpath
 cgpvaf_out = parsed_args$cgpvaf_out
 match_normal_id = parsed_args$match_normal_id
+rho_threshold = parsed_args$rho_threshold
 outdir = parsed_args$outdir
 gender = parsed_args$gender
 }
@@ -40,6 +41,8 @@ source(paste0(libpath, '/Unmatched_NormSeq/beta_binom_filter.R'))
 
 
 vaf_data = read.table(cgpvaf_out, header=T)
+vaf_data = vaf_data[vaf_data[[paste0(match_normal_id, '_MTR')]] == 0,] # ensure that the read for the match normal is definitely 0
+
 
 ids = vaf_data[, c('Chrom', 'Pos', 'Ref', 'Alt')]
 
@@ -97,7 +100,7 @@ if (length(sample_vaf_cols) == 1) {
   shared_muts=rowSums(NV_somatic>0)>1
 
   rho_est = beta.binom.filter(NR=NR_somatic_nonzero, NV=NV_somatic, shared_muts = shared_muts)
-  flt_rho = log10(rho_est)<(-1)
+  flt_rho = rho_est < rho_threshold
   rho_df = data.frame(rho_est = rho_est, filter_out_by_rho = flt_rho) 
 
   # save artefact filtered NR and NV to disk 

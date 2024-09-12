@@ -41,14 +41,14 @@ workflow {
                 sample_paths_content_ch = CONPAIR_FILTER_WITH_MATCH_NORMAL.out
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_snp, row.vcf_tbi_snp, row.bam, row.bai, row.bas, row.met, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_SNP(sample_paths_content_ch, vcfilter_config)
+                FILTER_WITH_MATCH_NORMAL_SNP(sample_paths_content_ch, vcfilter_config, params.bbinom_rho_snv)
             }
             else {
                 sample_paths = new File(params.sample_paths).getText('UTF-8')
                 sample_paths_content_ch = Channel.of(sample_paths)
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_snp, row.vcf_tbi_snp, row.bam, row.bai, row.bas, row.met, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_SNP(sample_paths_content_ch, vcfilter_config)
+                FILTER_WITH_MATCH_NORMAL_SNP(sample_paths_content_ch, vcfilter_config, param.bbinom_rho_snv)
             }
         }
 
@@ -59,14 +59,14 @@ workflow {
                 sample_paths_content_ch = CONPAIR_FILTER_WITH_MATCH_NORMAL.out
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_indel, row.bam, row.bai, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_INDEL(sample_paths_content_ch, vcfilter_config)
+                FILTER_WITH_MATCH_NORMAL_INDEL(sample_paths_content_ch, vcfilter_config, params.bbinom_rho_indel)
             }
             else {
                 sample_paths = new File(params.sample_paths).getText('UTF-8')
                 sample_paths_content_ch = Channel.of(sample_paths)
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_indel, row.bam, row.bai, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_INDEL(sample_paths_content_ch, vcfilter_config)
+                FILTER_WITH_MATCH_NORMAL_INDEL(sample_paths_content_ch, vcfilter_config, params.bbinom_rho_indel)
             }
         }
 
