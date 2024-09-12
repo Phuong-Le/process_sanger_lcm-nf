@@ -1,8 +1,9 @@
 process sigprofilerPlotSnpByBranches {
-    publishDir "${params.outdir}", overwrite: false
+    publishDir "${params.outdir}/${outdir_basename}", overwrite: false
 
     input:
     path mutmat_dir
+    val outdir_basename
 
     output:
     path mutmat_plot_dir
@@ -10,6 +11,6 @@ process sigprofilerPlotSnpByBranches {
     script:
     mutmat_plot_dir = "combined_matrices_by_branches/plots"
     """
-    sigprofiler_plotting_snp.py --matrix_dir ${mutmat_dir} --project branch_combined_mutmat --output_path ${mutmat_plot_dir}
+    sigprofiler_plotting.py --matrix_dir ${mutmat_dir} --project branch_combined_mutmat --output_path ${mutmat_plot_dir}
     """
 }

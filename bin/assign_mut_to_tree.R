@@ -94,7 +94,7 @@ Mutations_per_branch=as.data.frame(matrix(ncol=4,unlist(strsplit(rownames(NR_flt
 colnames(Mutations_per_branch)=c("CHROM","POS","REF","ALT")
 Mutations_per_branch$Branch = tree$edge[res$summary$edge_ml,2]
 Mutations_per_branch=Mutations_per_branch[res$summary$p_else_where<0.01,]
-filename = paste0(out_prefix, ".muts_assigned_to_tree.vcf")
+filename = paste0(out_prefix, ".muts_assigned_to_tree.txt")
 write.table(Mutations_per_branch, filename, quote=F, row.names=F, sep="\t")
 }
 

@@ -1,5 +1,5 @@
 process hairpinFilter {
-    publishDir "${params.outdir}/${pdid}", overwrite: false, pattern: "*.filter.vcf.gz"
+    publishDir "${params.outdir}/filter_snp_out/${pdid}", overwrite: false, pattern: "*.filter.vcf.gz"
 
     // hairpin filter the mutation file 
     input:

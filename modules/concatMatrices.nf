@@ -1,8 +1,9 @@
 process concatMatrices {
-    publishDir "${params.outdir}", overwrite: false
+    publishDir "${params.outdir}/${outdir_basename}", overwrite: false
 
     input:
     path matrix_dirs, stageAs: "indir/matrix_generator*"
+    val outdir_basename
 
     output:
     path outdir

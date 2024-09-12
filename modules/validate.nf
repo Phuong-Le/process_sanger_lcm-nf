@@ -4,6 +4,10 @@
 
 validParams = [
     with_match_normal: 'boolean',
+    conpair: 'boolean',
+    filter_snp: 'boolean',
+    filter_indel: 'boolean',
+    phylogenetics: 'boolean',
     singularity_cachedir: 'path',
     sample_paths: 'path',
     concordance_threshold: 'number',
@@ -12,10 +16,13 @@ validParams = [
     marker_bed: 'path',
     marker_txt: 'path',
     vcfilter_config: '',
-    mut_type: 'str',
     reference_genome: 'path',
+    reference_genome_dict: 'path',
+    reference_genome_idx: 'path',
     high_depth_region: 'path',
     phylogenetics: 'boolean',
+    with_topology: '',
+    phylogenetics_outdir_basename: '',
     outdir: 'path',
     help: '',
     max_memory: '',
@@ -103,7 +110,7 @@ void validate(Map params) {
 }
 
 // mut_type can only be "snp" or "indel"
-if ( ! ["snp", "indel"].contains(params.mut_type) ) {
-    log.error("mut_type can only be either snp or indel")
-    System.exit(2)
-}
+// if ( ! ["snp", "indel"].contains(params.mut_type) ) {
+//     log.error("mut_type can only be either snp or indel")
+//     System.exit(2)
+// }

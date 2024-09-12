@@ -1,5 +1,5 @@
 process cgpVaf {
-    publishDir "${params.outdir}/${pdid}", overwrite: false
+    publishDir "${params.outdir}/filter_${mut_type}_out/${pdid}", overwrite: false
 
     // calculate Vaf 
     input:

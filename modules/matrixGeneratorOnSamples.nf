@@ -1,8 +1,9 @@
 process matrixGeneratorOnSamples {
-    publishDir "${params.outdir}", overwrite: false
+    publishDir "${params.outdir}/filter_${mut_type}_out", overwrite: false
 
     input:
     path vcf_ls, stageAs: 'sample_mutmat/*'
+    val mut_type
 
     output:
     path mutmat_dir
