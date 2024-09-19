@@ -129,8 +129,8 @@ workflow {
                     .out
                     .filter { it[3].readLines().first().split(' ').size() > 2 }
 
-            mutToTree_input_ch = topology.cross(phylogenetics_input_ch)
-                    .map( pdid -> tuple(pdid[0][0], pdid[0][1], pdid[1][1], pdid[1][2], pdid[1][3]) )
+                mutToTree_input_ch = topology.cross(phylogenetics_input_ch)
+                        .map( pdid -> tuple(pdid[0][0], pdid[0][1], pdid[1][1], pdid[1][2], pdid[1][3]) )
 
             PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY(mutToTree_input_ch, 'phylogenetics_indel_out') // phylogenetics with tree topology
         }

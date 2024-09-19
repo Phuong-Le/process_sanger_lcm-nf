@@ -13,7 +13,6 @@
 import sys
 import os
 import optparse
-# import imp
 from collections import defaultdict
 import numpy as np
 from math import pow
