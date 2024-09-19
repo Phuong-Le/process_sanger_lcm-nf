@@ -4,7 +4,7 @@
   "title": "process_sanger_lcm-nf pipeline parameters",
   "description": "Pipeline for filtering LCM artifacts and germline mutations post LCMB. Contact Phuong at al35@sanger.ac.uk.",
   "type": "object",
-  "defs": {
+  "definitions": {
     "input_output_options": {
       "title": "Input/output options",
       "type": "object",
@@ -178,28 +178,28 @@
   },
   "allOf": [
     {
-      "$ref": "#/defs/input_output_options"
+      "$ref": "#/definitions/input_output_options"
     },
     {
-      "$ref": "#/defs/conpair_options"
+      "$ref": "#/definitions/conpair_options"
     },
     {
-      "$ref": "#/defs/snv_filtering_options"
+      "$ref": "#/definitions/snv_filtering_options"
     },
     {
-      "$ref": "#/defs/indel_filtering_options"
+      "$ref": "#/definitions/indel_filtering_options"
     },
     {
-      "$ref": "#/defs/vcfilter_options"
+      "$ref": "#/definitions/vcfilter_options"
     },
     {
-      "$ref": "#/defs/cgpvaf_options"
+      "$ref": "#/definitions/cgpvaf_options"
     },
     {
-      "$ref": "#/defs/phylogenetics_options"
+      "$ref": "#/definitions/phylogenetics_options"
     },
     {
-      "$ref": "#/defs/schema_validation_default_options"
+      "$ref": "#/definitions/schema_validation_default_options"
     }
   ]
 }
