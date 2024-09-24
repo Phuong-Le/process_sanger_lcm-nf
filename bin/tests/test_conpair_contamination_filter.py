@@ -37,7 +37,33 @@ def test_filter_by_concordance():
         'PD47151n_lo0002': ['PD47151b'],
         'PD47151n_lo0004': ['PD47151b']}
     assert filter_by_concordance(samples_dict, concordance, concordance_threshold = 90) == expected
+
+def test_filter_by_concordance_one_wrong_match(caplog):
+    samples_dict = {'PD47151n_lo0002': ['PD47151n_lo0002',
+        'PD47151b',
+        'PD47151',
+        'some/path/47151'],
+        'PD47151n_lo0004': ['PD47151n_lo0004',
+        'PD47151b',
+        'PD47151',
+        'some/path/47151_4'],
+        'PD52103n_lo0002': ['PD52103n_lo0002',
+        'PD52103b',
+        'PD52103',
+        'some/path/52103']}
+    concordance = pd.DataFrame([['PD52103n_lo0002', 'PD47151b', 24.65, 0.5566435468516252],
+       ['PD47151n_lo0004', 'PD52103b', 95, 0.4736842105263157],
+       ['PD52103n_lo0002', 'PD52103b', 99.8, 0.5419556643546851],
+       ['PD47151n_lo0002', 'PD47151b', 99.61, 0.4547803617571059],
+       ['PD47151n_lo0002', 'PD52103b', 24.92, 0.4432204542363661],
+       ['PD47151n_lo0004', 'PD47151b', 20, 0.489188086495308]],
+        columns=['sample_id', 'match_id', 'concordance', 'fraction_of_markers'])
     
+    expected = {'PD52103n_lo0002': ['PD52103b'],
+        'PD47151n_lo0002': ['PD47151b']}
+    assert filter_by_concordance(samples_dict, concordance, concordance_threshold = 90) == expected
+    assert "sample PD47151n_lo0004 matches the wrong match normal ['PD52103b'], potentially a labelling error,\nplease check whether this is the case,\nremoving sample PD47151n_lo0004" in caplog.text
+
 def test_filter_by_concordance_one_multiple_match(caplog):
     samples_dict = {'PD47151n_lo0002': ['PD47151n_lo0002',
         'PD47151b',
