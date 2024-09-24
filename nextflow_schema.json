@@ -4,27 +4,37 @@
   "title": "process_sanger_lcm-nf pipeline parameters",
   "description": "Pipeline for filtering LCM artifacts and germline mutations post LCMB. Contact Phuong at al35@sanger.ac.uk.",
   "type": "object",
-  "definitions": {
+  "defs": {
     "input_output_options": {
       "title": "Input/output options",
       "type": "object",
       "fa_icon": "fas fa-terminal",
       "description": "Define where the pipeline should find input data and save output data.",
-      "required": ["samplesheet", "reference_genome", "outdir"],
+      "required": [
+        "samplesheet",
+        "reference_genome",
+        "outdir",
+        "reference_genome_dict",
+        "reference_genome_idx"
+      ],
       "properties": {
         "samplesheet": {
           "type": "string",
-          "description": "A file that contains paths to relevant files for the processes in the pipeline, with headers similar to demo_files/lcm_processing_input_indel.tsv for Indels or demo_files/lcm_processing_input_snv.tsv for SNVs."
-        },
-        "mut_type": {
-          "type": "string",
-          "default": "snv",
-          "description": "The type of mutation in the input files.",
-          "enum": ["snv", "indel"]
+          "description": "A file that contains paths to relevant files for the processes in the pipeline, with headers similar to demo_files/lcm_processing_input_indel.tsv for indels or demo_files/lcm_processing_input_snv.tsv for SNVs."
         },
         "reference_genome": {
           "type": "string",
           "description": "Path to the reference genome fasta file."
+        },
+        "reference_genome_dict": {
+          "type": "string",
+          "format": "file-path",
+          "description": "Path to the *.dict file associated with the reference genome fasta file."
+        },
+        "reference_genome_idx": {
+          "type": "string",
+          "format": "file-path",
+          "description": "Path to the *.idx file associated with the reference genome fasta file."
         },
         "with_match_normal": {
           "type": "boolean",
@@ -54,22 +64,27 @@
           "description": "Run Conpair?"
         },
         "marker_bed": {
-          "type": "string"
+          "type": "string",
+          "description": "Path to the marker reference *.bed file used by Conpair."
         },
         "marker_txt": {
-          "type": "string"
+          "type": "string",
+          "description": "Path to the marker reference *.txt file used by Conpair."
         },
         "concordance_threshold": {
-          "type": "integer",
-          "default": 90
+          "type": "number",
+          "default": 90.0,
+          "description": "Threshold above which each sample and a matched normal are considered to be from the same individual (0-100)."
         },
         "contamination_threshold_samples": {
           "type": "number",
-          "default": 0.3
+          "default": 0.3,
+          "description": "Threshold above which a sample is considered contaminated (0-100)."
         },
         "contamination_threshold_match": {
-          "type": "integer",
-          "default": 5
+          "type": "number",
+          "default": 5.0,
+          "description": "Threshold above which the sample is considered contaminated (0-100)."
         }
       }
     },
@@ -119,7 +134,7 @@
       "properties": {
         "high_depth_bed": {
           "type": "string",
-          "description": "Path to a reference BED file of high depth regions."
+          "description": "Path to a reference BED file of high depth regions for cgpVAF."
         }
       }
     },
@@ -141,65 +156,35 @@
           "type": "string"
         }
       }
-    },
-    "schema_validation_default_options": {
-      "title": "Schema validation default options",
-      "type": "object",
-      "description": "",
-      "default": "",
-      "properties": {
-        "validate_params": {
-          "type": "boolean",
-          "default": true,
-          "hidden": true
-        },
-        "validationFailUnrecognisedParams": {
-          "type": "boolean",
-          "hidden": true
-        },
-        "validationLenientMode": {
-          "type": "boolean",
-          "hidden": true
-        },
-        "validationShowHiddenParams": {
-          "type": "boolean",
-          "hidden": true
-        },
-        "validationS3PathCheck": {
-          "type": "boolean",
-          "hidden": true
-        },
-        "validationSkipDuplicateCheck": {
-          "type": "boolean",
-          "hidden": true
-        }
-      }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/input_output_options"
+      "$ref": "#/defs/input_output_options"
     },
     {
-      "$ref": "#/definitions/conpair_options"
+      "$ref": "#/defs/conpair_options"
     },
     {
-      "$ref": "#/definitions/snv_filtering_options"
+      "$ref": "#/defs/snv_filtering_options"
     },
     {
-      "$ref": "#/definitions/indel_filtering_options"
+      "$ref": "#/defs/indel_filtering_options"
     },
     {
-      "$ref": "#/definitions/vcfilter_options"
+      "$ref": "#/defs/vcfilter_options"
     },
     {
-      "$ref": "#/definitions/cgpvaf_options"
+      "$ref": "#/defs/cgpvaf_options"
     },
     {
-      "$ref": "#/definitions/phylogenetics_options"
-    },
-    {
-      "$ref": "#/definitions/schema_validation_default_options"
+      "$ref": "#/defs/phylogenetics_options"
     }
-  ]
+  ],
+  "properties": {
+    "singularity_cachedir": {
+      "type": "string",
+      "default": "/lustre/scratch126/casm/team154pc/at31/process_sanger_lcm-nf/singularity"
+    }
+  }
 }

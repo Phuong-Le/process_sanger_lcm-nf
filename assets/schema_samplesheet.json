@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/nf-validation/example/master/assets/schema_input.json",
+  "$id": "https://raw.githubusercontent.com/nf-core/rnaseq/master/assets/schema_input.json",
   "title": "params.samplesheet schema",
-  "description": "Schema for the file provided with params.samplehseet",
+  "description": "Schema for the file provided with params.samplesheet",
   "type": "array",
   "items": {
     "type": "object",
@@ -28,11 +28,6 @@
         "errorMessage": "Donor ID must be provided and cannot contain spaces",
         "meta": ["pdid"]
       },
-      "data_dir": {
-        "type": "string",
-        "unique": true,
-        "meta": ["data_dir"]
-      },
       "bam_match": {
         "type": "string",
         "format": "file-path",
@@ -48,13 +43,24 @@
         "format": "file-path",
         "exists": true
       },
-      "vcf": {
+      "vcf_snv": {
         "type": "string",
         "format": "file-path",
         "pattern": "^\\S+\\.vcf\\.gz$",
         "exists": true
       },
-      "vcf_tbi": {
+      "vcf_tbi_snv": {
+        "type": "string",
+        "format": "file-path",
+        "exists": true
+      },
+      "vcf_indel": {
+        "type": "string",
+        "format": "file-path",
+        "pattern": "^\\S+\\.vcf\\.gz$",
+        "exists": true
+      },
+      "vcf_tbi_indel": {
         "type": "string",
         "format": "file-path",
         "exists": true
@@ -80,6 +86,6 @@
         "exists": true
       }
     },
-    "required": ["sample_id", "match_normal_id", "pdid", "bam_match", "bai_match", "vcf", "vcf_tbi", "bam", "bai"]
+    "required": ["sample_id", "match_normal_id", "pdid", "bam_match", "bai_match", "bam", "bai"]
   }
 }

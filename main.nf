@@ -27,7 +27,6 @@ if (workflow.containerEngine == 'singularity') {
 if (params.help) {
   def String command = """nextflow run process_sanger_lcm-nf \\
     --samplesheet /path/to/samplesheet.csv \\
-    --mut_type snv \\
     --reference_genome /path/to/genome.fa \\
     --high_depth_bed /path/to/HiDepth.bed.gz \\
     --outdir out/""".stripIndent()
@@ -36,9 +35,7 @@ if (params.help) {
 }
 
 // validate parameters
-if (params.validate_params) {
-  validateParameters()
-}
+validateParameters()
 
 workflow {
     
@@ -46,12 +43,28 @@ workflow {
     log.info paramsSummaryLog(workflow)
 
     // generate a channel of samples
-    Channel.fromList(samplesheetToList(params.samplesheet, "./assets/schema_samplesheet.json"))
-    | map { meta, bam_match, bai_match, bas_match, vcf, vcf_tbi, bam, bai, bas, met -> 
-            [meta, file(bam_match)] }
-    | set { ch_samples }
+    //ch_input = Channel.fromList(samplesheetToList(params.samplesheet, "assets/schema_samplesheet.json"))
+    Channel.fromPath(params.samplesheet, checkIfExists: true)
+    | splitCsv(header: true)
+    | map { row ->
+            meta = row.subMap("sample_id", "match_normal_id", "pdid")
+            [meta,
+              file(row.bam),
+              file(row.bai),
+              file(row.bas),
+              file(row.met),
+              file(row.vcf_snv),
+              file(row.vcf_tbi_snv),
+              file(row.vcf_indel),
+              file(row.vcf_tbi_indel),
+              file(row.bam_match),
+              file(row.bai_match)]
+    }
+    | set { ch_input }
+    ch_input.view()
+    exit 0
 
-    // TODO: implement new channel architecture throughout pipeline
+    println("test")
     exit 0
 
     if (params.with_match_normal == true) {
@@ -79,7 +92,7 @@ workflow {
             }
         }
 
-        // // filtering indels 
+        // filtering indels 
         if (params.filter_indel == true) {
             vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/indel_default.filter" : params.vcfilter_config
             if (params.conpair == true) {
