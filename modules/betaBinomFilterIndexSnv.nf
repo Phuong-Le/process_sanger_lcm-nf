@@ -1,4 +1,4 @@
-process betaBinomFilterIndex {
+process betaBinomFilterIndexSnv {
     publishDir "${params.outdir}/filter_${mut_type}_out/${pdid}", overwrite: false
 
     // Beta Binomial filtering of germline mutations and artefacts, based on Tim Coorens' R script
@@ -17,7 +17,7 @@ process betaBinomFilterIndex {
 
     script:
     """
-    Rscript --vanilla ${projectDir}/bin/beta_binom_filter_index.R --libpath=${projectDir}/lib --cgpvaf_out=${vaf} --match_normal_id=${match_normal_id} --rho_threshold=${rho_threshold} --outdir=. 
+    Rscript --vanilla ${projectDir}/bin/beta_binom_filter_index_snv.R --libpath=${projectDir}/lib --cgpvaf_out=${vaf} --match_normal_id=${match_normal_id} --rho_threshold=${rho_threshold} --outdir=. 
     """
 
 }

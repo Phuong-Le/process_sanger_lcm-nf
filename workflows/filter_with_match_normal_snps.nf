@@ -1,7 +1,7 @@
 include { hairpinFilter } from "$projectDir/modules/hairpin.nf"
 include { pindelFilter } from "$projectDir/modules/pindelFilter.nf"
 include { cgpVaf } from "$projectDir/modules/cgpVaf.nf"
-include { betaBinomFilterIndex } from "$projectDir/modules/betaBinomFilterIndex.nf"
+include { betaBinomFilterIndexSnv } from "$projectDir/modules/betaBinomFilterIndexSnv.nf"
 include { betaBinomFilter } from "$projectDir/modules/betaBinomFilter.nf"
 include { matrixGeneratorOnSamples } from "$projectDir/modules/matrixGeneratorOnSamples.nf"
 include { sigprofilerPlotSnpBySamples } from "$projectDir/modules/sigprofilerPlotSnpBySamples.nf"
@@ -29,7 +29,7 @@ workflow FILTER_WITH_MATCH_NORMAL_SNP {
 
 
     // BetaBinomial filtering for germline and LCM artefacts based on cgpVaf (methods by Tim Coorens)
-    (beta_binom_index_ch, germline, somatic, rho, phylogenetics_input_ch) = betaBinomFilterIndex(cgpVaf.out, mut_type, rho_threshold) // get the indices for the filtering 
+    (beta_binom_index_ch, germline, somatic, rho, phylogenetics_input_ch) = betaBinomFilterIndexSnv(cgpVaf.out, mut_type, rho_threshold) // get the indices for the filtering 
     // use hairpin vcfiltered output to recover the donor-based channels from cgpVaf
     vcfiltered_relevant_ch = vcfiltered_ch
         .map( sample -> tuple(sample[0], sample[1], sample[2], sample[3], sample[4]) )

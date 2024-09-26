@@ -41,8 +41,6 @@ source(paste0(libpath, '/Unmatched_NormSeq/beta_binom_filter.R'))
 
 
 vaf_data = read.table(cgpvaf_out, header=T)
-vaf_data = vaf_data[vaf_data[[paste0(match_normal_id, '_MTR')]] == 0,] # ensure that the read for the match normal is definitely 0
-
 
 ids = vaf_data[, c('Chrom', 'Pos', 'Ref', 'Alt')]
 
