@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/nf-core/rnaseq/master/assets/schema_input.json",
+  "title": "params.samplesheet schema",
+  "description": "Schema for the file provided with params.samplesheet",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "sample_id": {
+        "type": "string",
+        "unique": true,
+        "pattern": "^\\S+$",
+        "errorMessage": "Sample ID must be provided and cannot contain spaces",
+        "meta": ["sample_id"]
+      },
+      "match_normal_id": {
+        "type": "string",
+        "unique": true,
+        "pattern": "^\\S+$",
+        "errorMessage": "Match normal ID must be provided and cannot contain spaces",
+        "meta": ["match_normal_id"]
+      },
+      "pdid": {
+        "type": "string",
+        "unique": true,
+        "pattern": "^\\S+$",
+        "errorMessage": "Donor ID must be provided and cannot contain spaces",
+        "meta": ["pdid"]
+      },
+      "bam_match": {
+        "type": "string",
+        "format": "file-path",
+        "exists": true
+      },
+      "bai_match": {
+        "type": "string",
+        "format": "file-path",
+        "exists": true
+      },
+      "vcf_snp": {
+        "type": "string",
+        "format": "file-path",
+        "pattern": "^\\S+\\.vcf\\.gz$",
+        "exists": true
+      },
+      "vcf_tbi_snp": {
+        "type": "string",
+        "format": "file-path",
+        "exists": true
+      },
+      "vcf_indel": {
+        "type": "string",
+        "format": "file-path",
+        "pattern": "^\\S+\\.vcf\\.gz$",
+        "exists": true
+      },
+      "vcf_tbi_indel": {
+        "type": "string",
+        "format": "file-path",
+        "exists": true
+      },
+      "bam": {
+        "type": "string",
+        "format": "file-path",
+        "exists": true
+      },
+      "bai": {
+        "type": "string",
+        "format": "file-path",
+        "exists": true
+      },
+      "bas": {
+        "type": "string",
+        "format": "file-path",
+        "exists": true
+      },
+      "met": {
+        "type": "string",
+        "format": "file-path",
+        "exists": true
+      }
+    },
+    "required": ["sample_id", "match_normal_id", "pdid", "bam_match", "bai_match", "bam", "bai", "bas", "met"]
+  }
+}
+
