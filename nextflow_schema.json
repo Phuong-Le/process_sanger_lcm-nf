@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/nf-core/process_sanger_lcm-nf/master/nextflow_schema.json",
+  "title": "process_sanger_lcm-nf pipeline parameters",
+  "description": "Pipeline for filtering LCM artifacts and germline mutations post LCMB. Contact Phuong at al35@sanger.ac.uk.",
+  "type": "object",
+  "$defs": {
+    "input_output_options": {
+      "title": "Input/output options",
+      "type": "object",
+      "fa_icon": "fas fa-terminal",
+      "description": "Define where the pipeline should find input data and save output data.",
+      "required": [
+        "sample_paths",
+        "reference_genome",
+        "reference_genome_dict",
+        "reference_genome_idx",
+        "outdir"
+      ],
+      "properties": {
+        "sample_paths": {
+          "type": "string",
+          "description": "A file that contains paths to relevant files for the processes in the pipeline, with headers similar to demo_files/lcm_processing_input_indel.tsv for indels or demo_files/lcm_processing_input_snv.tsv for SNVs.",
+          "format": "file-path"
+        },
+        "reference_genome": {
+          "type": "string",
+          "description": "Path to the reference genome fasta file.",
+          "format": "file-path"
+        },
+        "reference_genome_dict": {
+          "type": "string",
+          "format": "file-path",
+          "description": "Path to the *.dict file associated with the reference genome fasta file."
+        },
+        "reference_genome_idx": {
+          "type": "string",
+          "format": "file-path",
+          "description": "Path to the *.idx file associated with the reference genome fasta file."
+        },
+        "with_match_normal": {
+          "type": "boolean",
+          "default": true,
+          "description": "Is the matching BAM (bam_match in sample_paths) a true matched normal (rather than an in silico matched normal)?"
+        },
+        "outdir": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+          "fa_icon": "fas fa-folder-open"
+        }
+      }
+    },
+    "conpair_options": {
+      "title": "Conpair options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "conpair": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run Conpair?"
+        },
+        "marker_bed": {
+          "type": "string",
+          "description": "Path to the marker reference *.bed file used by Conpair.",
+          "format": "file-path"
+        },
+        "marker_txt": {
+          "type": "string",
+          "description": "Path to the marker reference *.txt file used by Conpair.",
+          "format": "file-path"
+        },
+        "concordance_threshold": {
+          "type": "number",
+          "default": 90.0,
+          "description": "Threshold above which each sample and a matched normal are considered to be from the same individual (0-100)."
+        },
+        "contamination_threshold_samples": {
+          "type": "number",
+          "default": 0.3,
+          "description": "Threshold above which a sample is considered contaminated (0-100)."
+        },
+        "contamination_threshold_match": {
+          "type": "number",
+          "default": 5.0,
+          "description": "Threshold above which the sample is considered contaminated (0-100)."
+        }
+      }
+    },
+    "snv_filtering_options": {
+      "title": "SNV filtering options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "filter_snp": {
+          "type": "boolean",
+          "default": true,
+          "description": "Filter SNVs?"
+        },
+        "bbinom_rho_snv": {
+          "type": "number",
+          "default": 0.1,
+          "description": "Rho threshold for the beta-binomial test for SNVs."
+        },
+        "vcfilter_snv": {
+          "type": "string",
+          "default": "/lustre/scratch126/casm/team154pc/at31/process_sanger_lcm-nf/data/snp_default.filter",
+          "description": "Pre-cgpVAF filtering. Path to a file containing the filtering criteria for SNVs.",
+          "format": "file-path"
+        }
+      }
+    },
+    "indel_filtering_options": {
+      "title": "Indel filtering options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "filter_indel": {
+          "type": "boolean",
+          "default": true,
+          "description": "Filter indels?"
+        },
+        "bbinom_rho_indel": {
+          "type": "number",
+          "default": 0.2,
+          "description": "Rho threshold for the beta-binomial test for indels."
+        },
+        "vcfilter_indel": {
+          "type": "string",
+          "description": "Pre-cgpVAF filtering. Path to a file containing the filtering criteria for indels.",
+          "format": "file-path",
+          "exists": true,
+          "default": "/lustre/scratch126/casm/team154pc/at31/process_sanger_lcm-nf/data/indel_default.filter"
+        }
+      }
+    },
+    "cgpvaf_options": {
+      "title": "cgpVAF options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "high_depth_region": {
+          "type": "string",
+          "description": "Path to a reference BED file of high depth regions for cgpVAF.",
+          "format": "file-path"
+        }
+      }
+    },
+    "phylogenetics_options": {
+      "title": "Phylogenetics options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "phylogenetics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Build a phylogenetic tree from the mutations?"
+        },
+        "snv_then_indel": {
+          "type": "boolean",
+          "description": "Build a phylogenetic tree from both SNVs and indels?",
+          "default": true
+        },
+        "with_topology": {
+          "type": "boolean",
+          "description": "True is recommended for indels, False is recommended for SNVs."
+        },
+        "phylogenetics_outdir_basename": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/input_output_options"
+    },
+    {
+      "$ref": "#/$defs/conpair_options"
+    },
+    {
+      "$ref": "#/$defs/snv_filtering_options"
+    },
+    {
+      "$ref": "#/$defs/indel_filtering_options"
+    },
+    {
+      "$ref": "#/$defs/cgpvaf_options"
+    },
+    {
+      "$ref": "#/$defs/phylogenetics_options"
+    }
+  ]
+}

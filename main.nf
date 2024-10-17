@@ -7,6 +7,7 @@ nextflow.enable.dsl=2
 include { validate } from "$projectDir/modules/validate.nf"
 
 // include different workflow options
+include { validateParameters; paramsHelp; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
 include { CONPAIR_FILTER_WITH_MATCH_NORMAL } from "$projectDir/workflows/conpair_filter_with_match_normal.nf"
 include { FILTER_WITH_MATCH_NORMAL_SNP } from "$projectDir/workflows/filter_with_match_normal_snps.nf"
 include { FILTER_WITH_MATCH_NORMAL_INDEL } from "$projectDir/workflows/filter_with_match_normal_indels.nf"
@@ -14,7 +15,7 @@ include { PHYLOGENETICS } from "$projectDir/workflows/phylogenetics.nf"
 include { PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY } from "$projectDir/workflows/phylogenetics_provided_topology.nf"
 
 // validate parameters
-validate(params)
+// validate(params)
 // download container images
 include { singularityPreflight } from "$projectDir/modules/singularity"
 // If Singularity is used as the container engine and not showing help message, do preflight check to prevent parallel pull issues
@@ -23,8 +24,11 @@ if (workflow.containerEngine == 'singularity') {
     singularityPreflight(workflow.container, params.singularity_cachedir)
 }
 
+// validate parameters
+validateParameters()
 
 workflow {
+
     // String sample_paths = new File(params.sample_paths).getText('UTF-8')
     
     if (params.with_match_normal == true) {
@@ -36,37 +40,35 @@ workflow {
 
         // filtering snps 
         if (params.filter_snp == true) {
-            vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/snp_default.filter" : params.vcfilter_config
             if (params.conpair == true) {
                 sample_paths_content_ch = CONPAIR_FILTER_WITH_MATCH_NORMAL.out
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_snp, row.vcf_tbi_snp, row.bam, row.bai, row.bas, row.met, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_SNP(sample_paths_content_ch, vcfilter_config, params.bbinom_rho_snv)
+                FILTER_WITH_MATCH_NORMAL_SNP(sample_paths_content_ch, params.vcfilter_snv, params.bbinom_rho_snv)
             }
             else {
                 sample_paths = new File(params.sample_paths).getText('UTF-8')
                 sample_paths_content_ch = Channel.of(sample_paths)
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_snp, row.vcf_tbi_snp, row.bam, row.bai, row.bas, row.met, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_SNP(sample_paths_content_ch, vcfilter_config, params.bbinom_rho_snv)
+                FILTER_WITH_MATCH_NORMAL_SNP(sample_paths_content_ch, params.vcfilter_snv, params.bbinom_rho_snv)
             }
         }
 
         // // filtering indels 
         if (params.filter_indel == true) {
-            vcfilter_config = (params.vcfilter_config=="") ? "${projectDir}/data/indel_default.filter" : params.vcfilter_config
             if (params.conpair == true) {
                 sample_paths_content_ch = CONPAIR_FILTER_WITH_MATCH_NORMAL.out
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_indel, row.bam, row.bai, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_INDEL(sample_paths_content_ch, vcfilter_config, params.bbinom_rho_indel)
+                FILTER_WITH_MATCH_NORMAL_INDEL(sample_paths_content_ch, params.vcfilter_indel, params.bbinom_rho_indel)
             }
             else {
                 sample_paths = new File(params.sample_paths).getText('UTF-8')
                 sample_paths_content_ch = Channel.of(sample_paths)
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_indel, row.bam, row.bai, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_INDEL(sample_paths_content_ch, vcfilter_config, params.bbinom_rho_indel)
+                FILTER_WITH_MATCH_NORMAL_INDEL(sample_paths_content_ch, params.vcfilter_indel, params.bbinom_rho_indel)
             }
         }
 
