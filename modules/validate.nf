@@ -22,6 +22,7 @@ validParams = [
     reference_genome_dict: 'path',
     reference_genome_idx: 'path',
     high_depth_region: 'path',
+    snv_then_indel: '',
     with_topology: '',
     phylogenetics_outdir_basename: '',
     outdir: 'path',

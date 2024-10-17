@@ -3,9 +3,11 @@
 from sigProfilerPlotting import plotSBS, plotDBS, plotID
 from pathlib import Path
 from glob import glob
+import logging 
 
 import argparse, sys
 
+logging.basicConfig(filename='sigprofiler_plotting.log', filemode='w', level = logging.INFO)
 
 def plot_spectra(matrix_dir, project, output_dir):
     matrix_dir = Path(matrix_dir)
@@ -14,6 +16,7 @@ def plot_spectra(matrix_dir, project, output_dir):
     output_path = f'{output_dir}/SBS/'
     for matrix_path in matrix_paths:
         plot_type=Path(matrix_path).name.split('.')[1][3:]
+        logging.info(f'plotting SBS {plot_type}')
         plotSBS(str(matrix_path), output_path, project, plot_type, percentage=False)
         
     # DBS
@@ -21,6 +24,7 @@ def plot_spectra(matrix_dir, project, output_dir):
     output_path = f'{output_dir}/DBS/'
     for matrix_path in matrix_paths:
         plot_type=Path(matrix_path).name.split('.')[1][3:]
+        logging.info(f'plotting DBS {plot_type}')
         plotDBS(str(matrix_path), output_path, project, plot_type, percentage=False)
 
     # ID
@@ -28,6 +32,7 @@ def plot_spectra(matrix_dir, project, output_dir):
     output_path = f'{output_dir}/ID/'
     for matrix_path in matrix_paths:
         plot_type=Path(matrix_path).name.split('.')[1][2:]
+        logging.info(f'plotting ID {plot_type}')
         if plot_type == '96': # there's an issue with format checking for ID96
             continue
         plotID(str(matrix_path), output_path, project, plot_type, percentage=False)
