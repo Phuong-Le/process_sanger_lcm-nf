@@ -33,7 +33,8 @@ log.info paramsSummaryLog(workflow)
 workflow {
 
     // create a channel from the sample paths
-    //Channel.fromList(samplesheetToList(params.sample_paths, ""))
+    ch_input = Channel.fromList(samplesheetToList(params.sample_paths, "$projectDir/assets/schema_sample_paths.json"))
+    ch_input.view()
     
     if (params.with_match_normal == true) {
 
