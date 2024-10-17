@@ -48,7 +48,7 @@ workflow {
                 sample_paths_content_ch = Channel.of(sample_paths)
                     .splitCsv( header: true, sep : '\t' )
                     .map { row -> tuple( row.sample_id, row.match_normal_id, row.pdid, row.vcf_snp, row.vcf_tbi_snp, row.bam, row.bai, row.bas, row.met, row.bam_match, row.bai_match ) }
-                FILTER_WITH_MATCH_NORMAL_SNP(sample_paths_content_ch, vcfilter_config, param.bbinom_rho_snv)
+                FILTER_WITH_MATCH_NORMAL_SNP(sample_paths_content_ch, vcfilter_config, params.bbinom_rho_snv)
             }
         }
 
