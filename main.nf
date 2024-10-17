@@ -27,9 +27,13 @@ if (workflow.containerEngine == 'singularity') {
 // validate parameters
 validateParameters()
 
+// print params summary log
+log.info paramsSummaryLog(workflow)
+
 workflow {
 
-    // String sample_paths = new File(params.sample_paths).getText('UTF-8')
+    // create a channel from the sample paths
+    //Channel.fromList(samplesheetToList(params.sample_paths, ""))
     
     if (params.with_match_normal == true) {
 
