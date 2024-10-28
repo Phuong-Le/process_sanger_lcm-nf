@@ -3,9 +3,6 @@
 // Enable DSL 2
 nextflow.enable.dsl=2
 
-// import processes for main workflow
-include { validate } from "$projectDir/modules/validate.nf"
-
 // include different workflow options
 include { validateParameters; paramsHelp; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
 include { CONPAIR_FILTER_WITH_MATCH_NORMAL } from "$projectDir/workflows/conpair_filter_with_match_normal.nf"
@@ -14,8 +11,6 @@ include { FILTER_WITH_MATCH_NORMAL_INDEL } from "$projectDir/workflows/filter_wi
 include { PHYLOGENETICS } from "$projectDir/workflows/phylogenetics.nf"
 include { PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY } from "$projectDir/workflows/phylogenetics_provided_topology.nf"
 
-// validate parameters
-// validate(params)
 // download container images
 include { singularityPreflight } from "$projectDir/modules/singularity"
 // If Singularity is used as the container engine and not showing help message, do preflight check to prevent parallel pull issues
@@ -40,7 +35,16 @@ workflow {
 
         // conpair 
         if (params.conpair == true) {
-            CONPAIR_FILTER_WITH_MATCH_NORMAL(params.sample_paths) 
+            CONPAIR_FILTER_WITH_MATCH_NORMAL(
+              ch_input,
+              params.marker_txt,
+              params.marker_bed,
+              params.reference_genome,
+              params.reference_genome_dict,
+              params.reference_genome_idx,
+              params.concordance_threshold,
+              params.contamination_threshold_samples,
+              params.contamination_threshold_match) 
         }
 
         // filtering snps 
