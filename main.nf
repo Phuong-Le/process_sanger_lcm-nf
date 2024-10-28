@@ -64,7 +64,7 @@ workflow {
             }
         }
 
-        // // filtering indels 
+        // filtering indels 
         if (params.filter_indel == true) {
             if (params.conpair == true) {
                 sample_paths_content_ch = CONPAIR_FILTER_WITH_MATCH_NORMAL.out
@@ -115,7 +115,8 @@ workflow {
 
                 PHYLOGENETICS_PROVIDED_TREE_TOPOLOGY(mutToTree_input_ch, 'phylogenetics_indel_out') // phylogenetics with tree topology
             }
-            else { // phylogenetics pipeline only 
+            else {
+                // phylogenetics pipeline only 
                 if (params.snv_then_indel == true) {
                     sample_paths = new File(params.sample_paths).getText('UTF-8')
                     phylogenetics_snv_input_ch = Channel.of(sample_paths)

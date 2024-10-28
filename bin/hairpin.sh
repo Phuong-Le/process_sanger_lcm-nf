@@ -43,5 +43,3 @@ vcf_hairpin_filter=$(basename $vcf | sed 's/vcf.gz/hairpin.filter.vcf/') # outpu
 bgzip $vcf_hairpin_filter
 vcf_hairpin_filter_bgzipped=$(basename $vcf | sed 's/vcf.gz/hairpin.filter.vcf.gz/')
 tabix $vcf_hairpin_filter_bgzipped 
-
-#
