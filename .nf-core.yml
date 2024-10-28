@@ -1,0 +1,18 @@
+bump_version: null
+lint: {}
+nf_core_version: 3.0.2
+org_path: null
+repository_type: pipeline
+template:
+  author: Anh Phuong Le, Rashesh Sanghvi, Alex Tidd, Chuling Ding, Alex Byrne, Raul
+    Alacantra Aragon
+  description: building trees from low input DNA
+  force: true
+  is_nfcore: true
+  name: lowinputtrees
+  org: nf-core
+  outdir: .
+  skip_features:
+  - fastqc
+  version: 0.0.1dev
+update: null
