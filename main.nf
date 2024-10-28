@@ -36,15 +36,15 @@ workflow {
         // conpair 
         if (params.conpair == true) {
             CONPAIR_FILTER_WITH_MATCH_NORMAL(
-              ch_input,
-              params.marker_txt,
-              params.marker_bed,
-              params.reference_genome,
-              params.reference_genome_dict,
-              params.reference_genome_idx,
-              params.concordance_threshold,
-              params.contamination_threshold_samples,
-              params.contamination_threshold_match) 
+                ch_input,
+                params.marker_txt,
+                params.marker_bed,
+                params.reference_genome,
+                params.reference_genome_dict,
+                params.reference_genome_idx,
+                params.concordance_threshold,
+                params.contamination_threshold_samples,
+                params.contamination_threshold_match)
         }
 
         // filtering snps 
