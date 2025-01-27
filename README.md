@@ -1,3 +1,6 @@
+NOTE: this repo will be retired, please move to this repo https://github.com/Phuong-Le/lcmb where the same pipeline is implemented based on an nf-core template instead 
+
+
 # Filter_sanger_lcm-nf
 
 A Nextflow pipeline to process LCM data post-CaVEMan or Pindel variant calling 
